@@ -177,10 +177,6 @@ Beyond simple **summaries**, Astro-Biome highlights each article’s **objective
 
 ![Advanced Search Dark](/image/Advanced-Search.png)
 
-![Advanced Search Light](/image/Advanced-Search-light.png)
-
-![Advanced-Search-Read-the-article](/image/Advanced-Search-Read-article.png)
-
 ![Advanced-Search-article](/image/Advanced-Search-article.png)
 
 ![Column-chart-analysis](/image/Column-chart-of-analysis-of-the-word-Bone.png)
