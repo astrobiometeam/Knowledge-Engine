@@ -4,8 +4,6 @@ Astro-Biome
 
 ![Team Logo](/image/logo.jpg)
 
-![Team Logo Motion](/image/logomotion.mp4)
-
 [![NASA Space Apps Challenge](https://img.shields.io/badge/Event-NASA%20Space%20Apps%202025-blue)](https://www.spaceappschallenge.org/)
 ![Difficulty: Advanced](https://img.shields.io/badge/Difficulty-Advanced-red)
 ![Subjects: AI, Data, Biology, Space](https://img.shields.io/badge/Subjects-AI%2FML%20%7C%20Knowledge%20Graph%20%7C%20Space%20Biology-green)
