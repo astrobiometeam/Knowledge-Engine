@@ -7,9 +7,11 @@ pandas
 requests
 beautifulsoup4
 nltk
+gunicorn
 spacy
 spacytextblob
 textblob
 httpx
 selenium
 gTTS
+
