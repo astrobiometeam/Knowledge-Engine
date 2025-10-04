@@ -534,7 +534,7 @@ class NASATaskBookScraper:
                 task_id = task_id_match.group(1)
                 print(f"Task ID : {task_id}")
             
-            # استخراج اطلاعات بر اساس ساختار واقعی NASA TaskBook
+            
             title = self._extract_task_title(expected_title)
             investigator = self._extract_task_investigator()
             institution = self._extract_task_institution()
@@ -931,8 +931,7 @@ class NASATaskBookScraper:
                 matches = re.finditer(pattern, page_text, re.IGNORECASE | re.DOTALL)
                 for match in matches:
                     keyword_text = match.group(1).strip()
-                    if keyword_text:
-                        # تقسیم با کاما، سمی‌کالن یا and
+                    if k
                         keyword_list = re.split(r'[,;]|\sand\s', keyword_text)
                         for keyword in keyword_list:
                             clean_keyword = keyword.strip()
@@ -964,7 +963,7 @@ class NASATaskBookScraper:
                 for match in matches:
                     pub_text = match.group(1).strip()
                     if pub_text:
-                        # تقسیم انتشارات
+                        
                         pub_list = re.split(r'\n(?=\d+\.|\w+,|\w+\s+\(\d{4}\))', pub_text)
                         for pub in pub_list:
                             clean_pub = pub.strip()
