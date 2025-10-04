@@ -1642,7 +1642,7 @@ class VoiceAssistant {
         eyeTargets.forEach(target => {
             if (mesh.morphTargetDictionary[target] !== undefined) {
                 const targetIndex = mesh.morphTargetDictionary[target];
-                const targetValue = (Math.random() - 0.5) * 0.3; // حرکت ملایم
+                const targetValue = (Math.random() - 0.5) * 0.3; 
                 
                 const animateToTarget = () => {
                     const current = mesh.morphTargetInfluences[targetIndex] || 0;
