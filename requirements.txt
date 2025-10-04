@@ -1,0 +1,15 @@
+﻿Flask
+Flask-Cors
+Flask-SQLAlchemy
+xmltodict
+ratelimit
+pandas
+requests
+beautifulsoup4
+nltk
+spacy
+spacytextblob
+textblob
+httpx
+selenium
+gTTS
