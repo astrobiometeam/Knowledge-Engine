@@ -97,7 +97,7 @@ class NSLSLScraper:
             
             if not article_links:
                 print("No article links found")
-                پ
+                
                 with open("debug_results_page.html", "w", encoding="utf-8") as f:
                     f.write(self.driver.page_source)
                 print("Results page saved for debug")
@@ -784,3 +784,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
