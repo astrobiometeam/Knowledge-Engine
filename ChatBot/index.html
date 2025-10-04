@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Space Biology AI Assistant - Knowledge Engine</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body data-theme="dark">
+    <div class="app-container">
+        <div class="avatar-section">
+            <div class="fixed-header-mobile">
+                <h1>🚀 NASA Space Biology AI Assistant</h1>
+                <div class="session-status subtitle">Advanced Research Companion</div>
+            </div>
+            <div class="avatar-container" id="avatar-container">
+                <canvas id="avatar-canvas"></canvas>
+                <div class="avatar-status">
+                    <div class="status-indicator" id="status-indicator"></div>
+                    <span id="status-text">Space Biology AI Online</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-section">
+            <div class="chat-header">
+                <div class="header-info">
+                    <h1>🚀 NASA Space Biology AI Assistant</h1>
+                    <div class="session-status subtitle">Advanced Research Companion</div>
+                </div>
+                <div class="header-controls">
+                    <button class="control-btn" id="stop-btn" title="Stop Response">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                    <button class="control-btn" id="regenerate-btn" title="Regenerate Response">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button class="control-btn" id="export-btn" title="Export Session">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="control-btn" id="theme-toggle" title="Toggle Theme">
+                        <i class="fas fa-sun"></i>
+                    </button>
+           
+                </div>
+                <div class="voice-type-selector">
+                    <button id="voice-type-toggle" class="voice-type-btn custom-voice" title="Switch to Fast Voice">
+                        <i class="fas fa-robot"></i>
+                        <span class="voice-type-text">Space AI Voice</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="messages-container" id="messages-container">
+                <div class="welcome-message">
+                    <div class="welcome-avatar">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="welcome-content">
+                        <h2>🌌 Welcome to NASA Space Biology AI</h2>
+                        <p>I'm your advanced AI assistant specializing in space biology research. Ask me about microgravity effects, space radiation, plant biology in space, ISS experiments, astrobiology, and more. I can also analyze space-related images and documents.</p>
+                        <div class="quick-topics">
+                            <span class="topic-tag" onclick="sendQuickMessage('microgravity effects on human physiology')">🧬 Microgravity Effects</span>
+                            <span class="topic-tag" onclick="sendQuickMessage('space radiation research')">☢️ Space Radiation</span>
+                            <span class="topic-tag" onclick="sendQuickMessage('plant biology in space')">🌱 Plant Biology</span>
+                            <span class="topic-tag" onclick="sendQuickMessage('ISS experiments')">🛰️ ISS Research</span>
+                            <span class="topic-tag" onclick="sendQuickMessage('astrobiology')">🔬 Astrobiology</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="typing-indicator" id="typing-indicator">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span class="typing-text">Space AI is analyzing...</span>
+                </div>
+            </div>
+            
+            <div class="input-section">
+                <div class="emotion-display" id="emotion-display">
+                    <i class="fas fa-satellite emotion-icon"></i>
+                    <span class="emotion-label" id="emotion-label">Research Mode</span>
+                </div>
+                
+                <div id="image-preview-container">
+                    <img id="image-preview" src="" alt="preview" />
+                    <span id="remove-preview">&times;</span>
+                </div>
+                
+                <div class="input-container">
+                    <textarea 
+                        id="message-input" 
+                        placeholder="Ask me about space biology research, microgravity effects, or upload space-related images..."
+                        rows="1"
+                    ></textarea>
+
+                    <div class="input-controls">
+                        <button class="voice-btn" id="voice-btn">
+                            <i class="fas fa-microphone"></i>
+                            <span>Hold to speak</span>
+                        </button>
+                        <label class="control-btn" id="image-btn" title="Attach image" for="image-input" style="display:flex;align-items:center;gap:6px;">
+                            <i class="fas fa-image"></i>
+                        </label>
+                        <input type="file" id="image-input" accept="image/*" style="display:none" />
+
+                        <button class="send-btn" id="send-btn">
+                            <i class="fas fa-rocket"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="voice-feedback" id="voice-feedback">
+                    <div class="voice-visual">
+                        <canvas id="voice-canvas" width="300" height="50"></canvas>
+                    </div>
+                    <div class="transcription-display" id="transcription-display">
+                        Listening for space biology questions...
+                    </div>
+                </div>
+                
+                <div class="data-sources-indicator">
+                    <div class="sources-title">📊 Connected Data Sources:</div>
+                    <div class="sources-list">
+                        <span class="source-item active">GeneLab</span>
+                        <span class="source-item active">NSLSL</span>
+                        <span class="source-item active">TaskBook</span>
+                        <span class="source-item active">OSDR</span>
+                        <span class="source-item active">PubMed</span>
+                        <span class="source-item active">OpenAlex</span>
+                        <span class="source-item active">NCBI GEO</span>
+                        <span class="source-item active">bioRxiv</span>
+                        <span class="source-item active">Europe</span>
+                        <span class="source-item active">Crossref</span>
+                        <span class="source-item active">medRxiv</span>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/EXRLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
