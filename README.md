@@ -1,8 +1,8 @@
 #  NASA Space Biology Knowledge Engine Astro-Biome & AI Chatbot 
 
-![Team Logo](/image/logo.jpg)
+Astro-Biome
 
-![Astro-Biome]
+![Team Logo](/image/logo.jpg)
 
 ![Team Logo Motion](/image/logomotion.mp4)
 
