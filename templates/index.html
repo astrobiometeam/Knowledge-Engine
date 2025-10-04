@@ -1,0 +1,4016 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Space Biology Knowledge Engine</title>
+    
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" crossorigin="anonymous">
+
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"crossorigin="anonymous"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"crossorigin="anonymous"></script>
+
+    <style>
+:root {
+    --primary-color: #0066cc;
+    --secondary-color: #28a745;
+    --success-color: #20c997;
+    --info-color: #17a2b8;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --dark-color: #0A0E1A;
+    --light-color: #c7c8ca;
+
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-info: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-space: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+    --gradient-cosmic: linear-gradient(45deg, #0f3460 0%, #e94560 50%, #f2c14e 100%);
+    
+    --space-primary: #0A0E1A;
+    --space-secondary: #1A1F2E;
+    --space-tertiary: #252B3D;
+    --space-accent: #00D4AA;
+    --space-blue: #4FACFE;
+    --space-purple: #667EEA;
+    --space-pink: #F093FB;
+    
+    --sidebar-width: 320px;
+    --navbar-height: 80px;
+    --border-radius: 16px;
+    --border-radius-large: 24px;
+    --box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --box-shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+    --box-shadow-space: 0 8px 32px rgba(0, 212, 170, 0.2);
+    
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-backdrop: blur(20px);
+
+    --animation-duration: 0.4s;
+    --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --animation-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --text-muted: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="light"] {
+    --primary-color: #0066cc;
+    --secondary-color: #28a745;
+    --success-color: #20c997;
+    --info-color: #17a2b8;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --dark-color: #f8f9fa;
+    --light-color: #343a40;
+
+    --gradient-primary: linear-gradient(135deg, #4a8cff 0%, #0066cc 100%);
+    --gradient-success: linear-gradient(135deg, #20c997 0%, #198754 100%);
+    --gradient-warning: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    --gradient-info: linear-gradient(135deg, #17a2b8 0%, #0dcaf0 100%);
+    --gradient-space: linear-gradient(135deg, #e9ecef 0%, #dee2e6 50%, #ced4da 100%);
+    --gradient-cosmic: linear-gradient(45deg, #e9ecef 0%, #dee2e6 50%, #ced4da 100%);
+    
+    --space-primary: #f8f9fa;
+    --space-secondary: #e9ecef;
+    --space-tertiary: #dee2e6;
+    --space-accent: #0066cc;
+    --space-blue: #0d6efd;
+    --space-purple: #6f42c1;
+    --space-pink: #d63384;
+    
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-backdrop: blur(10px);
+    
+    --text-primary: #212529;
+    --text-secondary: #495057;
+    --text-muted: #6c757d;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   
+    z-index: -1;       
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    direction: ltr;
+    color: var(--text-primary);
+    position: relative;
+    background: white;
+    transition: color 0.3s ease;
+}
+
+.space-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(0, 212, 170, 0.2) 0%, transparent 50%),
+        var(--gradient-space);
+    animation: cosmicFloat 20s ease-in-out infinite;
+}
+
+[data-theme="light"] .space-background {
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(200, 200, 255, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 200, 150, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(100, 200, 255, 0.2) 0%, transparent 50%),
+        var(--gradient-space);
+}
+
+.spaceship {
+    position: fixed;
+    top: 20%;
+    right: -200px;
+    width: 150px;
+    height: 80px;
+    z-index: -1;
+    opacity: 0.1;
+    animation: spaceshipFly 30s linear infinite;
+}
+
+[data-theme="light"] .spaceship {
+    opacity: 0.05;
+}
+
+.spaceship::before {
+    content: '';
+    font-size: 60px;
+    position: absolute;
+    transform: rotate(-45deg);
+    filter: drop-shadow(0 0 20px rgba(0, 212, 170, 0.5));
+}
+
+[data-theme="light"] .spaceship::before {
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
+}
+
+.space-icons {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.space-icon {
+    position: absolute;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.1);
+    animation: floatIcon 15s linear infinite;
+}
+
+[data-theme="light"] .space-icon {
+    color: rgba(0, 0, 0, 0.1);
+}
+
+.space-icon:nth-child(1) { left: 10%; animation-delay: 0s; }
+.space-icon:nth-child(2) { left: 20%; animation-delay: -2s; }
+.space-icon:nth-child(3) { left: 30%; animation-delay: -4s; }
+.space-icon:nth-child(4) { left: 40%; animation-delay: -6s; }
+.space-icon:nth-child(5) { left: 50%; animation-delay: -8s; }
+.space-icon:nth-child(6) { left: 60%; animation-delay: -10s; }
+.space-icon:nth-child(7) { left: 70%; animation-delay: -12s; }
+.space-icon:nth-child(8) { left: 80%; animation-delay: -14s; }
+.space-icon:nth-child(9) { left: 90%; animation-delay: -16s; }
+
+.stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgb(157, 157, 157);
+    border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite alternate;
+}
+
+[data-theme="light"] .star {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+@keyframes cosmicFloat {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg);
+        filter: hue-rotate(0deg);
+    }
+    33% { 
+        transform: translateY(-20px) rotate(120deg);
+        filter: hue-rotate(120deg);
+    }
+    66% { 
+        transform: translateY(10px) rotate(240deg);
+        filter: hue-rotate(240deg);
+    }
+}
+
+@keyframes spaceshipFly {
+    0% { 
+        transform: translateX(0) translateY(0) rotate(0deg);
+        right: -200px;
+        top: 20%;
+    }
+    25% { 
+        transform: translateX(-50px) translateY(-30px) rotate(10deg);
+        right: 25%;
+        top: 15%;
+    }
+    50% { 
+        transform: translateX(-100px) translateY(20px) rotate(-5deg);
+        right: 50%;
+        top: 25%;
+    }
+    75% { 
+        transform: translateX(-150px) translateY(-10px) rotate(8deg);
+        right: 75%;
+        top: 20%;
+    }
+    100% { 
+        transform: translateX(-200px) translateY(0) rotate(0deg);
+        right: 100%;
+        top: 20%;
+    }
+}
+
+@keyframes floatIcon {
+    0% {
+        transform: translateY(100vh) translateX(0px) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.2;
+    }
+    90% {
+        opacity: 0.2;
+    }
+    100% {
+        transform: translateY(-100px) translateX(50px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes twinkle {
+    from { opacity: 0.3; transform: scale(1); }
+    to { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--space-primary);
+    backdrop-filter: var(--glass-backdrop);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity var(--animation-duration) var(--animation-easing);
+}
+
+.loading-spinner {
+    text-align: center;
+    animation: fadeInUp 0.6s var(--animation-easing);
+    color: var(--space-accent);
+}
+
+.spinner-border {
+    width: 4rem;
+    height: 4rem;
+    border-width: 0.4em;
+    border-color: var(--space-accent);
+    border-right-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.navbar {
+    height: var(--navbar-height);
+    background: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-backdrop);
+    box-shadow: var(--box-shadow-space);
+    border: 1px solid var(--glass-border);
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary) !important;
+    display: flex;
+    align-items: center;
+    transition: all var(--animation-duration) var(--animation-bounce);
+    text-shadow: 0 0 20px rgba(0, 212, 170, 0.5);
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05) rotate(2deg);
+    color: var(--space-accent) !important;
+}
+
+
+    .navbar-toggler {
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+    }
+
+
+
+.brand-logo {
+    margin-left: 15px;
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 10px var(--space-accent));
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.brand-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    line-height: 1.2;
+    background: var(--gradient-info);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    line-height: 1;
+    color: var(--space-accent);
+}
+
+.nav-pill {
+    border-radius: 30px;
+    padding: 0.8rem 1.5rem !important;
+    margin: 0 0.5rem;
+    transition: all var(--animation-duration) var(--animation-bounce);
+    position: relative;
+    overflow: hidden;
+    color: var(--text-secondary) !important;
+    text-decoration: none;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-backdrop);
+}
+
+.nav-pill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 212, 170, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.nav-pill:hover::before {
+    left: 100%;
+}
+
+.nav-pill.active {
+    background: var(--gradient-info) !important;
+    color: rgb(255, 255, 255) !important;
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow-space);
+    border: 1px solid var(--space-accent);
+}
+
+.nav-pill:hover {
+    background: var(--glass-bg) !important;
+    transform: translateY(-2px);
+    color: white !important;
+    box-shadow: var(--box-shadow);
+}
+
+.main-content {
+    margin-top: var(--navbar-height);
+    padding: 2rem;
+    min-height: calc(100vh - var(--navbar-height));
+    position: relative;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: slideInFromRight 0.6s var(--animation-easing);
+}
+
+@keyframes slideInFromRight {
+    from { 
+        opacity: 0; 
+        transform: translateX(50px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+}
+
+.stat-card {
+    border: none;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    transition: all var(--animation-duration) var(--animation-bounce);
+    position: relative;
+    color: white;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    border: 1px solid var(--glass-border);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(transparent, var(--space-accent), transparent 30%);
+    animation: borderRotate 4s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.stat-card:hover::after {
+    opacity: 0.5;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--box-shadow-space);
+}
+
+@keyframes borderRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.bg-gradient-primary { 
+    background: var(--gradient-primary) !important; 
+}
+.bg-gradient-success { 
+    background: var(--gradient-success) !important; 
+}
+.bg-gradient-warning { 
+    background: var(--gradient-warning) !important; 
+}
+.bg-gradient-info { 
+    background: var(--gradient-info) !important; 
+}
+
+.stat-card-body {
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.stat-icon {
+    font-size: 3rem;
+    opacity: 0.9;
+    margin-right: 1rem;
+    animation: iconFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px currentColor);
+}
+
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1;
+    text-shadow: 0 0 20px currentColor;
+    animation: numberGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes numberGlow {
+    from { filter: brightness(1); }
+    to { filter: brightness(1.2); }
+}
+
+.stat-label {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-trend {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    padding: 0.3rem 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.chart-card, .info-card, .filter-card, .results-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--glass-border);
+    transition: all var(--animation-duration) var(--animation-easing);
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-card::before, .info-card::before, .filter-card::before, .results-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    transition: left 0.8s;
+}
+
+.chart-card:hover::before, .info-card:hover::before, 
+.filter-card:hover::before, .results-card:hover::before {
+    left: 100%;
+}
+
+.chart-card:hover, .info-card:hover, .filter-card:hover, .results-card:hover {
+    box-shadow: var(--box-shadow-space);
+    transform: translateY(-5px);
+    border-color: var(--space-accent);
+}
+
+.chart-header, .info-header, .filter-header, .results-header {
+    padding: 2rem 2rem 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 1.5rem;
+}
+
+.chart-body, .info-body, .filter-body, .results-body {
+    padding: 0 2rem 2rem 2rem;
+}
+
+.form-control, .form-select {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    color: rgb(121, 121, 121);
+    transition: all 0.3s ease;
+    padding: 0.8rem 1rem;
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--space-accent);
+    box-shadow: 0 0 0 0.2rem rgba(0, 212, 170, 0.25);
+    background: var(--glass-bg);
+}
+
+.top-message {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--space-accent);
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow-space);
+  z-index: 3000;
+  backdrop-filter: var(--glass-backdrop);
+  transition: opacity 0.5s ease;
+} 
+
+.result-objective {
+  margin-top: 0.8rem;
+  padding: 0.6rem 1rem;
+  background: rgba(0, 123, 255, 0.05); 
+  border-left: 4px solid #0d6efd;   
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #333);
+}
+
+.result-objective strong {
+  color: #0d6efd; 
+}
+
+
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: all var(--animation-duration) var(--animation-bounce);
+    padding: 0.8rem 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-primary {
+    background: var(--gradient-info);
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--box-shadow-space);
+}
+
+
+
+.btn-success {
+    background: var(--gradient-success);
+    border: none;
+}
+
+.btn-warning {
+    background: var(--gradient-warning);
+    border: none;
+}
+
+.search-result {
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-large);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.4s ease;
+    background: rgba(10, 10, 25, 0.85);
+    backdrop-filter: var(--glass-backdrop);
+    color: var(--text-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.search-result::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 212, 170, 0.1), transparent);
+    transition: left 0.6s;
+}
+
+.search-result:hover::before {
+    left: 100%;
+}
+
+.search-result:hover {
+    box-shadow: var(--box-shadow-space);
+    transform: translateY(-5px) scale(1.02);
+    border-color: var(--space-accent);
+}
+
+.result-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: var(--space-accent);
+    text-shadow: 0 0 10px rgba(0, 212, 170, 0.3);
+}
+
+.result-authors {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.result-abstract {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+}
+
+.result-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.result-keywords {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.keyword-tag {
+    background: var(--glass-bg);
+    color: var(--space-accent);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    border: 1px solid var(--space-accent);
+    transition: all 0.3s ease;
+}
+
+.keyword-tag:hover {
+    background: var(--space-accent);
+    color: white;
+    transform: scale(1.1);
+}
+
+.graph-container {
+    height: 600px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-large);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    position: relative;
+    overflow: hidden;
+}
+
+.graph-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    gap: 0.8rem;
+}
+
+.graph-control-btn {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+}
+
+.graph-control-btn:hover {
+    background: var(--space-accent);
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: var(--box-shadow);
+}
+
+.report-metric {
+    text-align: center;
+    padding: 2rem;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-large);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.report-metric:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-space);
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--space-accent);
+    text-shadow: 0 0 20px var(--space-accent);
+    animation: numberPulse 2s ease-in-out infinite;
+}
+
+@keyframes numberPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.metric-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-top: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+}
+
+.empty-icon {
+    font-size: 5rem;
+    margin-bottom: 2rem;
+    opacity: 0.3;
+    animation: iconBounce 2s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+.alert {
+  border-radius: var(--border-radius-large);
+  border: 1px solid transparent;
+  box-shadow: 0 0 15px rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+}
+
+.alert-success {
+  background: #1e4029; 
+  color: #d4edda;
+  border: 1px solid var(--success-color);
+}
+
+.alert-danger {
+  background: #402020; 
+  color: #f8d7da;
+  border: 1px solid var(--danger-color);
+}
+
+.alert-info {
+  background: #1a2e40; 
+  color: #d1ecf1;
+  border: 1px solid var(--info-color);
+}
+
+.progress {
+    height: 12px;
+    border-radius: 6px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: var(--gradient-info);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: progressShine 2s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.loading-text {
+    display: inline-block;
+    animation: pulse 1.5s ease-in-out infinite alternate;
+    color: var(--space-accent);
+}
+
+@keyframes pulse {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
+}
+
+.badge {
+    border-radius: 20px;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-primary { 
+    background: var(--gradient-primary); 
+    color: white;
+}
+.badge-success { 
+    background: var(--gradient-success); 
+    color: white;
+}
+.badge-warning { 
+    background: var(--gradient-warning); 
+    color: white;
+}
+.badge-info { 
+    background: var(--gradient-info); 
+    color: white;
+} 
+.badge-neutral {
+    background: linear-gradient(135deg, #ced4da 0%, #adb5bd 100%); /* خاکستری گرادیانی */
+    color: black;
+}
+
+    .stat-card-body {
+        padding: 1rem;
+    }
+    
+    .search-result {
+        padding: 1.5rem;
+    }
+    
+    .chart-header, .info-header, .filter-header, .results-header {
+        padding: 1.5rem 1.5rem 0 1.5rem;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .chart-body, .info-body, .filter-body, .results-body {
+        padding: 0 1.5rem 1.5rem 1.5rem;
+    }
+    
+    .navbar {
+        --navbar-height: 70px;
+    }
+    
+    .nav-pill {
+        padding: 0.6rem 1rem !important;
+        margin: 0 0.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .spaceship {
+        display: none;
+    }
+    
+    .space-icon {
+        font-size: 16px;
+    }
+
+    .navbar-toggler {
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+    }
+
+    .mobile-menu {
+      position: fixed;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-backdrop);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: top 0.4s ease;
+      z-index: 2000;
+    }
+
+    .mobile-menu.active {
+      top: 0;
+    }
+
+    .mobile-menu .menu-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      text-align: center;
+    }
+
+    .mobile-menu .nav-pill {
+      font-size: 1.2rem;
+      padding: 1rem 2rem;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    [data-theme="dark"] .mobile-menu {
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+    }
+    [data-theme="light"] .mobile-menu {
+      background: rgba(255, 255, 255, 0.9);
+      color: black;
+    }
+
+    @media (min-width: 992px) {
+      #menuToggle, #mobileMenu {
+        display: none !important;
+      }
+    }
+
+    .main-content {
+      margin-top: var(--navbar-height);
+      padding: 2rem;
+    }
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--space-secondary);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gradient-info);
+    border-radius: 6px;
+    border: 2px solid var(--space-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--space-accent);
+}
+
+.glass-effect {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    border: 1px solid var(--glass-border);
+}
+
+.space-glow {
+    box-shadow: 0 0 20px var(--space-accent);
+}
+
+.text-glow {
+    text-shadow: 0 0 20px currentColor;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+}
+
+.hover-grow:hover {
+    transform: scale(1.05);
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--space-background);
+    z-index: -2;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    display: flex;
+    flex-wrap: wrap;
+    opacity: 0.1;
+    pointer-events: none;
+    animation: floatIcons 20s linear infinite;
+}
+
+
+[data-theme="light"] .nav-pill,
+[data-theme="light"] .nav-pill:hover,
+[data-theme="light"] .nav-pill.active {
+    color: black !important;
+}
+
+
+@keyframes floatIcons {
+    0% { transform: translateY(100vh); }
+    100% { transform: translateY(-100px); }
+}
+
+.player-container audio {
+  width: 100%;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0b3d91, #1c1c1c);
+  box-shadow: 0 0 12px rgba(0, 153, 255, 0.6);
+  margin-top: 8px;
+}
+
+.player-container {
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(10, 10, 25, 0.8);
+}
+
+[data-theme="light"] .chart-card,
+[data-theme="light"] .info-card,
+[data-theme="light"] .filter-card,
+[data-theme="light"] .results-card,
+[data-theme="light"] .search-result,
+[data-theme="light"] .report-metric {
+    background: #ffffff !important;  
+    border: 1px solid #ccc !important;
+    backdrop-filter: none !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+[data-theme="light"] .navbar {
+    background: #ffffff !important;  
+    border: 1px solid #ccc !important;
+    backdrop-filter: none !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+
+/* افکت تکون خوردن و درخشش ربات */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  75% { transform: rotate(-10deg); }
+}
+@keyframes glow {
+  /* 0%, 100% { text-shadow: 0 0 5px #0ff, 0 0 15px #0ff; color: #00e0ff; } */
+  50% { text-shadow: 0 0 15px #0ff, 0 0 30px #0ff; color: #66f9ff; }
+}
+
+#chatbotNav i {
+  animation: wiggle 1s ease-in-out infinite alternate,
+             glow 2s ease-in-out infinite;
+}
+
+
+
+
+    </style>
+</head>
+<body>
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="https://static.vecteezy.com/system/resources/previews/006/160/619/mp4/shinny-gold-stars-animation-on-black-background-free-video.mp4" type="video/mp4">
+        Your browser does not support video.
+    </video>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-video">
+            <video autoplay muted loop playsinline style="max-width: 300px; border-radius: 12px;">
+                <source src="/static/1.mp4" type="video/mp4">
+                مرورگر شما از ویدیو پشتیبانی نمی‌کند.
+            </video>
+            <div class="mt-3">
+                <h5 class="loading-text">Initializing Knowledge Data ... </h5>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const overlay = document.getElementById("loadingOverlay");
+    const video = document.getElementById("loadingVideo");
+
+    video.play();
+
+    document.addEventListener("click", () => {
+        video.muted = false;
+        video.play().catch(err => console.log("Autoplay with sound failed:", err));
+    }, { once: true }); 
+
+    function hideOverlay() {
+        overlay.style.display = "none";
+        video.pause();
+    }
+
+    setTimeout(hideOverlay, 6500);
+</script>
+
+
+
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="http://127.0.0.1:5000">
+      <div>
+        <div class="brand-title">Astro-Biome</div>
+        <div class="brand-subtitle">Knowledge Engine</div>
+      </div>
+      <img src="/static/logo.jpg" 
+           alt="Astro-Biom Logo" 
+           class="brand-logo" 
+           style="height:40px; width:auto; border-radius:8px;">
+    </a>
+
+    <button id="menuToggle" class="navbar-toggler d-lg-none" type="button" aria-label="Toggle navigation">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="navbar-nav ms-auto">
+        <a class="nav-pill active" href="#" data-tab="dashboard">
+          <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+        </a>
+        <a class="nav-pill" href="#" data-tab="search">
+          <i class="fas fa-search me-1"></i>Advanced Search
+        </a>
+        <a class="nav-pill" href="#" data-tab="graph">
+          <i class="fas fa-project-diagram me-1"></i>Knowledge Graph
+        </a>
+        <a class="nav-pill" href="#" id="chatbotNav">
+            <i class="fas fa-robot me-1"></i>ChatBot
+        </a>
+
+        <script>
+        document.getElementById("chatbotNav").addEventListener("click", function (e) {
+            e.preventDefault();
+            window.location.href = "http://127.0.0.1:8000";
+        });
+        </script>
+        <a class="nav-pill" href="#" data-tab="reports">
+          <i class="fas fa-chart-bar me-1"></i>Reports
+        </a>
+        <div class="nav-pill" id="themeToggle">
+          <i class="fas fa-moon me-1"></i> light theme
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="mobileMenu" class="mobile-menu">
+  <button class="close-btn" id="closeMenu"><i class="fas fa-times"></i></button>
+  <div class="menu-links">
+    <a class="nav-pill active" href="#" data-tab="dashboard">
+      <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+    </a>
+    <a class="nav-pill" href="#" data-tab="search">
+      <i class="fas fa-search me-1"></i>Advanced Search
+    </a>
+    <a class="nav-pill" href="#" data-tab="graph">
+      <i class="fas fa-project-diagram me-1"></i>Knowledge Graph
+    </a>
+    <a class="nav-pill" href="https://astrobiom.com/chatbot" id="chatbotNav">
+      <i class="fas fa-robot me-1"></i>ChatBot
+    </a>
+    <a class="nav-pill" href="#" data-tab="reports">
+      <i class="fas fa-chart-bar me-1"></i>Reports
+    </a>
+    <div class="nav-pill" id="themeToggleMobile">
+      <i class="fas fa-moon me-1"></i> light theme
+    </div>
+  </div>
+</div>
+
+    <div class="main-content">
+        <div id="dashboard" class="tab-content active">
+            <div class="container-fluid">
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card bg-gradient-primary">
+                            <div class="stat-card-body d-flex align-items-center">
+                                <i class="fas fa-file-alt stat-icon"></i>
+                                <div>
+                                    <div class="stat-number" id="totalPapers">0</div>
+                                    <div class="stat-label">Research Papers</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
+                        <div class="stat-card-body">
+                        <h5 class="mb-3"><i class="fas fa-search me-2"></i> Quick Search</h5>
+                        <form id="quickSearchForm">
+                            <div class="input-group">
+                            <input type="text" id="quickSearchInput" class="form-control"
+                                    placeholder="Enter keyword in English...">
+                            <button class="btn btn-light" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card bg-gradient-warning">
+                            <div class="stat-card-body d-flex align-items-center">
+                                <i class="fas fa-satellite stat-icon"></i>
+                                <div>
+                                    <div class="stat-number">11</div>
+                                    <div class="stat-label">Active Missions</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h5><i class="fas fa-chart-line me-2"></i>Recent Activity</h5>
+                                <button class="btn btn-sm btn-outline-primary mb-2" onclick="refreshDashboard()">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                            <div class="chart-body">
+                                <div id="recentSearches">
+                                    <div class="empty-state">
+                                        <i class="fas fa-search empty-icon"></i>
+                                        <h6>No Recent Searches</h6>
+                                        <p>Start searching to see recent activity here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="info-card">
+                            <div class="info-header">
+                                <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                            </div>
+                            <div class="info-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="switchTab('search')">
+                                        <i class="fas fa-search me-2"></i>New Search
+                                    </button>
+                                    <button class="btn btn-outline-primary" onclick="switchTab('graph')">
+                                        <i class="fas fa-project-diagram me-2"></i>Knowledge Graph
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                                <div class="info-card mt-3">
+                                <div class="info-header">
+                                    <h6><i class="fas fa-database me-2"></i>Data Sources</h6>
+                                </div>
+                                <div class="info-body">
+                                    <div class="row text-center" id="dataSources">
+                                    <div class="col-6 mb-2"><span class="badge badge-success">GeneLab</span></div>
+                                    <div class="col-6 mb-2"><span class="badge badge-success">NSLSL</span></div>
+                                    <div class="col-6 mb-2"><span class="badge badge-success">TaskBook</span></div>
+                                    <div class="col-6 mb-2"><span class="badge badge-primary">OSDR</span></div>
+                                    <div class="col-6 mb-2"><span class="badge badge-warning">PubMed</span></div>
+                                    <div class="col-6 mb-2"><span class="badge badge-info">Europe</span></div>
+                                    <div class="col-6 mb-2"><span class="badge badge-primary">NCBI GEO</span></div>
+                                    <div class="col-6 mb-2"><span class="badge badge-warning">Crossref</span></div>
+                                    <!-- <div class="col-6 mb-2"><span class="badge badge-info">bioRxiv</span></div>
+                                    <div class="col-6 mb-2"><span class="badge badge-success">medRxiv</span></div> -->
+                                    <div class="col-6 mb-2"><span class="badge badge-info">OpenAlex</span></div>
+                                    </div>
+                                    
+                                    <div class="text-center mt-2">
+                                    <button id="seeMoreSources" class="btn btn-see-more d-none">
+                                        See more <i class="fas fa-chevron-down ms-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="search" class="tab-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <div class="filter-card">
+                            <div class="filter-header">
+                                <h5><i class="fas fa-filter me-2"></i> Search topic </h5>
+                                <button class="btn btn-sm btn-outline-secondary mb-2" onclick="resetFilters()">Reset</button>
+                            </div>
+                            <div class="filter-body">
+                                <form id="searchForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Search Query</label>
+                                        <input type="text" class="form-control" id="searchQuery" 
+                                               placeholder="Enter your research query...">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Data Sources</label>
+                                        <select class="form-select" id="dataSource">
+                                        <option value="">All Sources</option>
+                                        <option value="NASA_TaskBook">NASA Tasks</option>
+                                        <option value="nslsl">NSLSL</option>
+                                        <option value="SB_Publication">SB Publication</option>
+                                        <option value="osdr">OSDR / GeneLab</option>
+                                        <option value="Europe PMC">Europe PMC</option>
+                                        <option value="NCBI GEO">NCBI GEO</option>
+                                        <option value="PubMed">PubMed</option>
+                                        <option value="Crossref">Crossref</option>
+                                        <option value="OpenAlex">OpenAlex</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Publication Date</label>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <input type="date" class="form-control" id="dateFrom">
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="date" class="form-control" id="dateTo">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Research Areas</label>
+                                        <select class="form-select" id="researchArea">
+                                            <option value="">All Areas</option>
+                                            <option value="microgravity">Microgravity Biology</option>
+                                            <option value="radiation">Space Radiation</option>
+                                            <option value="plant">Plant Biology</option>
+                                            <option value="human">Human Physiology</option>
+                                            <option value="micro">Microbiology</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search me-2"></i>Start Search
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    
+                    <div class="col-lg-8">
+                        <div class="results-card">
+                            <div class="results-header">
+                                <h5><i class="fas fa-list me-2"></i>Results</h5>
+                                <div>
+                                    <span id="resultsCount" class="badge badge-primary">0 results</span>
+                                    <button class="btn btn-sm btn-outline-success ms-2 mb-2" onclick="exportResults()">
+                                        <i class="fas fa-download"></i> Export
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="results-body">
+
+                                <div id="chatbotBox" class="alert alert-info" role="alert"
+                                style="display:none; white-space: pre-wrap;"></div>
+
+                                <div id="searchResults">
+                                    <div class="empty-state">
+                                        <i class="fas fa-search empty-icon"></i>
+                                        <h6>Start Your Space Biology Research</h6>
+                                        <p>Use the advanced filters to search through NASA's vast collection of space biology research data.</p>
+                                        <div class="mt-3">
+                                            <strong>Popular Searches : </strong>
+                                            <span class="badge badge-info ms-2 cursor-pointer" onclick="quickSearch('microgravity effects')">microgravity effects</span>
+                                            <span class="badge badge-info ms-2 cursor-pointer" onclick="quickSearch('space radiation')">space radiation</span>
+                                            <span class="badge badge-info ms-2 cursor-pointer" onclick="quickSearch('plant biology ISS')">plant biology ISS</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    <div id="analysisSidebar" class="chart-card sticky-top" style="margin: 30px;padding: 10px; display: none;">
+                    <div class="chart-header">
+                    <h6 id="analysisTitle">
+                        <i class="fas fa-chart-bar me-2"></i> AI Analysis
+                    </h6>
+                    </div>
+
+                    <div class="chart-body">
+                        <div id="aiSidebarEmpty" class="empty-state">
+                        <i class="fas fa-chart-bar empty-icon"></i>
+                        <h6>Charts will appear here</h6>
+                        <p>Run a search to see bar charts based on the current results.</p>
+                        </div>
+                        <div id="aiSidebarContent" style="display:none;">
+                        <canvas id="sentimentChart" height="150"></canvas>
+                        <canvas id="keywordChart" height="150" class="mt-4"></canvas>
+                        <canvas id="topicChart" height="150" class="mt-4"></canvas>
+                        </div>
+                    </div>
+                    </div>
+
+                        </div>
+                    </div>
+               
+                </div>
+                
+            </div>
+        </div>
+
+        <div id="graph" class="tab-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-3 mb-4">
+                        <div class="filter-card">
+                            <div class="filter-header">
+                                <h6><i class="fas fa-cogs me-2"></i>Graph Controls</h6>
+                            </div>
+                            <div class="filter-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Graph Type</label>
+                                    <select class="form-select" id="graphType">
+                                        <option value="force">Force-Directed</option>
+                                        <option value="hierarchical">Hierarchical</option>
+                                        <option value="circular">Circular</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Node Types</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showPapers" checked>
+                                        <label class="form-check-label" for="showPapers">Papers</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showConcepts" checked>
+                                        <label class="form-check-label" for="showConcepts">Concepts</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showHubs" checked>
+                                        <label class="form-check-label" for="showHubs">Category Hubs</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Max Nodes</label>
+                                    <input type="range" class="form-range" id="maxNodes" 
+                                           min="10" max="100" value="50">
+                                    <div class="text-center"><span id="maxNodesValue">50</span></div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button class="btn btn-primary" onclick="generateGraph()">
+                                        <i class="fas fa-sync-alt me-2"></i>Refresh Graph
+                                    </button>
+                                </div>
+
+                                <div class="mt-4">
+                                    <h6>Graph Statistics</h6>
+                                    <div class="row text-center">
+                                        <div class="col-4">
+                                            <div class="metric-value" id="graphNodes">0</div>
+                                            <div class="metric-label">Nodes</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="metric-value" id="graphEdges">0</div>
+                                            <div class="metric-label">Edges</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="metric-value" id="graphDensity">0.0</div>
+                                            <div class="metric-label">Density</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-9">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h5><i class="fas fa-project-diagram me-2"></i>Interactive Knowledge Graph</h5>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="exportGraph()">
+                                        <i class="fas fa-download"></i> Export
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-info" onclick="analyzeGraph()">
+                                        <i class="fas fa-brain"></i> AI Analysis
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-body p-0">
+                                <div class="graph-container">
+                                    <div class="graph-controls">
+                                    </div>
+                                    <div id="knowledgeGraph" style="width: 100%; height: 100%;">
+                                        <div class="empty-state">
+                                            <i class="fas fa-project-diagram empty-icon"></i>
+                                            <h6>Building Knowledge Graph...</h6>
+                                            <p>The knowledge graph will appear here</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="reports" class="tab-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <div class="filter-card">
+                            <div class="filter-header">
+                                <h6><i class="fas fa-filter me-2"></i>Report Filters</h6>
+                            </div>
+                            <div class="filter-body">
+                                <form id="reportForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Date Range</label>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <input type="date" class="form-control" id="reportDateFrom">
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="date" class="form-control" id="reportDateTo">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Report Type</label>
+                                        <select class="form-select" id="reportType">
+                                            <option value="summary">Summary</option>
+                                            <option value="detailed">Detailed</option>
+                                            <option value="trends">Trends Analysis</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-chart-bar me-2"></i>Generate Report
+                                        </button>
+                                        <button type="button" class="btn btn-outline-success" onclick="exportReport()">
+                                            <i class="fas fa-file-excel me-2"></i>Export Excel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="results-card">
+                            <div class="results-header">
+                                <h5><i class="fas fa-chart-line me-2"></i>Activity Report</h5>
+                            <button class="btn btn-sm btn-outline-primary mb-2" onclick="refreshReport()">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                            </div>
+                            <div class="results-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-3">
+                                        <div class="report-metric">
+                                            <div class="metric-value" id="reportTotalSearches">0</div>
+                                            <div class="metric-label">Total Searches</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="report-metric">
+                                            <div class="metric-value" id="reportTotalResults">0</div>
+                                            <div class="metric-label">Total Results</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="report-metric">
+                                            <div class="metric-value" id="reportAvgResults">0</div>
+                                            <div class="metric-label">Avg Results</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="report-metric">
+                                            <div class="metric-value" id="reportActiveUsers">1</div>
+                                            <div class="metric-label">Active Users</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="reportContent">
+                                    <div class="empty-state">
+                                        <i class="fas fa-chart-bar empty-icon"></i>
+                                        <h6>No Report Data</h6>
+                                        <p>Select filters and generate a report to see activity data</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="alertContainer" style="position: fixed; top: 80px; right: 20px; z-index: 1050; width: 300px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+let currentTab = 'dashboard';
+let searchResults = [];
+let graphData = null;
+let reportData = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    initializeEventListeners();
+    initializeRangeSliders();
+    
+    checkSystemHealth().then(() => {
+        setTimeout(() => {
+            hideLoading();
+            loadDashboardData();
+        }, 6000);
+    });
+});
+
+async function checkSystemHealth() {
+    try {
+        const response = await fetch('/health');
+        const data = await response.json();
+        if (data.status === 'healthy') {
+            showAlert('System connected successfully', 'success');
+        } else {
+            showAlert('System health check failed', 'warning');
+        }
+    } catch (error) {
+        console.error('Health check failed:', error);
+        showAlert('Unable to connect to backend', 'danger');
+    }
+}
+
+function initializeEventListeners() {
+  document.querySelectorAll('.nav-pill').forEach(pill => {
+    if (pill.dataset.listenerAdded) return;
+    if (pill.id === 'themeToggle' || pill.id === 'themeToggleMobile') return;
+    if (pill.closest('#mobileMenu')) return; 
+    pill.addEventListener('click', function(e){
+      e.preventDefault();
+      const tab = this.getAttribute('data-tab');
+      if (tab) switchTab(tab);
+    });
+    pill.dataset.listenerAdded = '1';
+  });
+
+  const mobileMenuEl = document.getElementById('mobileMenu');
+  document.querySelectorAll('#mobileMenu .nav-pill').forEach(link => {
+    if (link.dataset.listenerAdded) return;
+    if (link.id === 'themeToggleMobile') return; 
+    link.addEventListener('click', function(e){
+      e.preventDefault();
+      const tab = this.getAttribute('data-tab');
+      if (tab) switchTab(tab);
+
+      if (history.state && history.state.menu) {
+        history.back();
+      } else if (mobileMenuEl) {
+        mobileMenuEl.classList.remove('active');
+      }
+
+    });
+
+
+function getChatbotBox() {
+  return document.getElementById('chatbotBox');
+}
+
+function showChatbotLoading() {
+  const box = getChatbotBox();
+  if (!box) return;
+  box.style.display = 'block';
+  box.className = 'alert alert-info';
+  box.innerHTML = `
+    <div class="d-flex align-items-start">
+      <i class="fas fa-robot me-2 mt-1"></i>
+      <div>
+        <div class="fw-bold mb-1">AI Summary</div>
+        <div>Generating AI summary…</div>
+      </div>
+    </div>
+  `;
+}
+
+function displayChatbotSummary(payload) {
+  const box = document.getElementById('chatbotBox');
+  if (!box) return;
+  const candidate =
+      (payload && payload.chatbot) ||
+      (payload && payload.pubmed_chatbot) ||
+      (payload && payload.ai) ||
+      payload;
+
+  if (!candidate) { box.style.display='none'; box.innerHTML=''; return; }
+
+  const isString = (typeof candidate === 'string');
+
+  const ok = isString
+    ? true
+    : (candidate.ok ?? candidate.success ?? (candidate.status === 'ok') ?? (candidate.code === 200) ?? false);
+
+  const summary = isString
+    ? candidate
+    : (
+        candidate.summary ||
+        candidate.response ||
+        candidate.message ||
+        candidate.text ||
+        candidate.content ||
+        candidate.answer ||
+        (candidate.report && (candidate.report.summary || candidate.report)) ||
+        (candidate.raw && candidate.raw.response) ||
+        ''
+      );
+
+  const audio =
+    (isString ? null :
+      candidate.audio_url || candidate.audio || (candidate.tts && candidate.tts.url) || null);
+
+  if ((ok || summary) && summary) {
+    box.style.display = 'block';
+    box.className = 'alert alert-info';
+    box.innerHTML = `
+      <div class="d-flex align-items-start">
+        <i class="fas fa-robot me-2 mt-1"></i>
+        <div style="flex:1;">
+          <div class="fw-bold mb-1">AI Summary</div>
+          <div id="chatbotSummaryText" style="white-space:pre-wrap;"></div>
+          ${audio ? `<audio controls class="mt-2" src="${audio}"></audio>` : ``}
+        </div>
+      </div>
+    `;
+    const textEl = document.getElementById('chatbotSummaryText');
+    if (textEl) textEl.textContent = String(summary);
+  } else {
+    box.style.display = 'block';
+    box.className = 'alert alert-warning';
+    box.textContent = candidate.error
+      ? `Chatbot: ${candidate.error}`
+      : 'Chatbot could not produce a summary.';
+  }
+}
+
+function clearChatbotSummary() {
+  const box = getChatbotBox();
+  if (!box) return;
+  box.style.display = 'none';
+  box.innerHTML = '';
+}
+
+function initializeEventListeners() {
+  document.querySelectorAll('.nav-pill').forEach(pill => {
+    if (pill.dataset.listenerAdded) return;
+    if (pill.id === 'themeToggle' || pill.id === 'themeToggleMobile') return;
+    if (pill.closest('#mobileMenu')) return;
+    pill.addEventListener('click', function(e){
+      e.preventDefault();
+      const tab = this.getAttribute('data-tab');
+      if (tab) switchTab(tab);
+    });
+    pill.dataset.listenerAdded = '1';
+  });
+
+  const mobileMenuEl = document.getElementById('mobileMenu');
+  document.querySelectorAll('#mobileMenu .nav-pill').forEach(link => {
+    if (link.dataset.listenerAdded) return;
+    if (link.id === 'themeToggleMobile') return;
+    link.addEventListener('click', function(e){
+      e.preventDefault();
+      const tab = this.getAttribute('data-tab');
+      if (tab) switchTab(tab);
+      if (history.state && history.state.menu) {
+        history.back();
+      } else if (mobileMenuEl) {
+        mobileMenuEl.classList.remove('active');
+      }
+    });
+    link.dataset.listenerAdded = '1';
+  });
+
+  const themeToggle = document.getElementById('themeToggle');
+  const themeToggleMobile = document.getElementById('themeToggleMobile');
+  if (themeToggle && !themeToggle.dataset.listenerAdded) {
+    themeToggle.addEventListener('click', toggleTheme);
+    themeToggle.dataset.listenerAdded = '1';
+  }
+  if (themeToggleMobile && !themeToggleMobile.dataset.listenerAdded) {
+    themeToggleMobile.addEventListener('click', toggleTheme);
+    themeToggleMobile.dataset.listenerAdded = '1';
+  }
+
+  const searchForm = document.getElementById('searchForm');
+  if (searchForm && !searchForm.dataset.listenerAdded) {
+    searchForm.addEventListener('submit', function(e){ e.preventDefault(); performSearch(); });
+    searchForm.dataset.listenerAdded = '1';
+  }
+
+  const reportForm = document.getElementById('reportForm');
+  if (reportForm && !reportForm.dataset.listenerAdded) {
+    reportForm.addEventListener('submit', function(e){ e.preventDefault(); generateReport(); });
+    reportForm.dataset.listenerAdded = '1';
+  }
+
+  document.querySelectorAll('.quick-search').forEach(button => {
+    if (button.dataset.listenerAdded) return;
+    button.addEventListener('click', function(){ quickSearch(this.textContent.trim()); });
+    button.dataset.listenerAdded = '1';
+  });
+}
+
+    link.dataset.listenerAdded = '1';
+  });
+
+  const themeToggle = document.getElementById('themeToggle');
+  const themeToggleMobile = document.getElementById('themeToggleMobile');
+  if (themeToggle && !themeToggle.dataset.listenerAdded) {
+    themeToggle.addEventListener('click', toggleTheme);
+    themeToggle.dataset.listenerAdded = '1';
+  }
+  if (themeToggleMobile && !themeToggleMobile.dataset.listenerAdded) {
+    themeToggleMobile.addEventListener('click', toggleTheme);
+    themeToggleMobile.dataset.listenerAdded = '1';
+  }
+
+  const searchForm = document.getElementById('searchForm');
+  if (searchForm && !searchForm.dataset.listenerAdded) {
+    searchForm.addEventListener('submit', function(e){ e.preventDefault(); performSearch(); });
+    searchForm.dataset.listenerAdded = '1';
+  }
+
+  const reportForm = document.getElementById('reportForm');
+  if (reportForm && !reportForm.dataset.listenerAdded) {
+    reportForm.addEventListener('submit', function(e){ e.preventDefault(); generateReport(); });
+    reportForm.dataset.listenerAdded = '1';
+  }
+
+  document.querySelectorAll('.quick-search').forEach(button => {
+    if (button.dataset.listenerAdded) return;
+    button.addEventListener('click', function(){ quickSearch(this.textContent.trim()); });
+    button.dataset.listenerAdded = '1';
+  });
+}
+
+
+function initializeRangeSliders() {
+    const maxNodesSlider = document.getElementById('maxNodes');
+    const maxNodesValue = document.getElementById('maxNodesValue');
+    
+    if (maxNodesSlider && maxNodesValue) {
+        maxNodesSlider.addEventListener('input', function() {
+            maxNodesValue.textContent = this.value;
+        });
+    }
+}
+
+function showLoading() {
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'flex';
+    }
+}
+
+function hideLoading() {
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'none';
+    }
+}
+
+function showAlert(message, type = 'info') {
+    const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    let container = document.getElementById('alertContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'alertContainer';
+        container.style.position = 'fixed';
+        container.style.top = '20px';
+        container.style.right = '20px';
+        container.style.zIndex = '9999';
+        container.style.maxWidth = '400px';
+        document.body.appendChild(container);
+    }
+    
+    container.innerHTML = alertHtml;
+    
+    setTimeout(() => {
+        const alert = container.querySelector('.alert');
+        if (alert) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+function switchTab(tabName) {
+    document.querySelectorAll('.nav-pill').forEach(pill => {
+        if (pill.id !== 'themeToggle' && pill.id !== 'themeToggleMobile') {
+            pill.classList.remove('active');
+        }
+    });
+
+    document.querySelectorAll(`[data-tab="${tabName}"]`).forEach(el => {
+        el.classList.add('active');
+    });
+
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    const activeContent = document.getElementById(tabName);
+    if (activeContent) {
+        activeContent.classList.add('active');
+    }
+
+    currentTab = tabName;
+
+    switch(tabName) {
+        case 'dashboard':
+            loadDashboardData();
+            showTabChangeMessage('Dashboard');
+            break;
+        case 'search':
+            showTabChangeMessage('Advanced Search');
+            break;
+        case 'graph':
+            generateGraph();
+            showTabChangeMessage('Knowledge Graph');
+            break;
+        case 'reports':
+            loadReportData();
+            showTabChangeMessage('Reports');
+            break;
+    }
+}
+
+function showTabChangeMessage(tabName) {
+    const messageContainer = document.createElement('div');
+    messageContainer.classList.add('top-message');
+    messageContainer.innerHTML = `Page changed to: <strong>${tabName}</strong>`;
+    document.body.appendChild(messageContainer);
+
+    setTimeout(() => {
+        messageContainer.remove();
+    }, 3000);  
+}
+
+async function loadDashboardData() {
+    try {
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+
+        if (data.success && data.stats && data.stats.database) {
+            updateDashboardStats(data.stats);
+            await loadRecentSearches();
+        } else {
+            throw new Error(data.error || 'Failed to load stats');
+        }
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        showAlert('Failed to load dashboard data', 'danger');
+
+        updateDashboardStats({
+            database: {
+                total_papers: 0,
+                total_knowledge_nodes: 0,
+                total_searches: 0
+            }
+        });
+        displayRecentSearches([]);
+    }
+}
+
+function updateDashboardStats(stats) {
+    const totalPapersEl = document.getElementById('totalPapers');
+    const totalConceptsEl = document.getElementById('totalConcepts');
+    const totalConnectionsEl = document.getElementById('totalConnections');
+
+    const totalPapers = stats.database?.total_papers || 0;
+    const totalConcepts = stats.database?.total_knowledge_nodes || 0;
+    const totalConnections = stats.database?.total_knowledge_nodes ? stats.database.total_knowledge_nodes * 2 : 0;
+
+    if (totalPapersEl) totalPapersEl.textContent = totalPapers;
+    if (totalConceptsEl) totalConceptsEl.textContent = totalConcepts;
+    if (totalConnectionsEl) totalConnectionsEl.textContent = totalConnections;
+
+}
+
+async function loadRecentSearchesFromRoot() {
+    try {
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+        const searches = data.recent_searches || [];
+        displayRecentSearches(searches);
+    } catch (error) {
+        console.error('Error loading recent searches:', error);
+        displayRecentSearches([]);
+    }
+}
+
+async function loadRecentSearches() {
+    try {
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+
+        if (data.success && data.stats && data.stats.database.recent_searches) {
+            displayRecentSearches(data.stats.database.recent_searches);
+        } else {
+            displayRecentSearches([]);
+        }
+    } catch (error) {
+        console.error('Error loading recent searches:', error);
+        displayRecentSearches([]);
+    }
+}
+
+function displayRecentSearches(searches) {
+    const container = document.getElementById('recentSearches');
+    if (!container) return;
+
+    if (searches.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-search empty-icon"></i>
+                <h6>No Recent Searches</h6>
+                <p>Start searching to see recent activity here</p>
+            </div>
+        `;
+        return;
+    }
+
+    
+    container.innerHTML = "";
+
+    
+    const list = document.createElement("div");
+    list.id = "recentList";
+    container.appendChild(list);
+
+    
+    const seeMoreBtn = document.createElement("button");
+    seeMoreBtn.id = "seeMoreBtn";
+    seeMoreBtn.className = "btn btn-link btn-sm mt-2 d-none";
+    seeMoreBtn.innerHTML = "See more <i class='fas fa-chevron-down ms-1'></i>";
+    container.appendChild(seeMoreBtn);
+
+    
+    let collapsedCount = 2; 
+    let expanded = false;
+
+    function renderList() {
+        list.innerHTML = "";
+        searches.forEach((search, index) => {
+            const item = document.createElement("div");
+            item.className = "search-result";
+            item.onclick = () => quickSearch(search.query);
+
+            item.innerHTML = `
+                <div class="result-title">${search.query}</div>
+                <div class="result-meta">
+                    <span><i class="fas fa-search me-1"></i>${search.results_count} results</span>
+                    <span><i class="fas fa-clock me-1"></i>${formatDate(search.search_time)}</span>
+                </div>
+            `;
+
+            
+            if (!expanded && index >= collapsedCount) {
+                item.style.display = "none";
+            }
+            list.appendChild(item);
+        });
+
+        
+        if (expanded) {
+            seeMoreBtn.innerHTML = "See less <i class='fas fa-chevron-up ms-1'></i>";
+        } else {
+            seeMoreBtn.innerHTML = "See more <i class='fas fa-chevron-down ms-1'></i>";
+        }
+
+        
+        if (searches.length > collapsedCount) {
+            seeMoreBtn.classList.remove("d-none");
+        } else {
+            seeMoreBtn.classList.add("d-none");
+        }
+    }
+
+    
+    renderList();
+
+    
+    seeMoreBtn.addEventListener("click", () => {
+        expanded = !expanded;
+        renderList();
+    });
+}
+
+function refreshDashboard() {
+    showLoading();
+    setTimeout(() => {
+        loadDashboardData();
+        hideLoading();
+        showAlert('Dashboard refreshed successfully', 'success');
+    }, 1000);
+}
+
+function getChatbotBox() {
+  return document.getElementById('chatbotBox');
+}
+
+function showChatbotLoading() {
+  const box = getChatbotBox();
+  if (!box) return;
+  box.style.display = 'block';
+  box.className = 'alert alert-info';
+  box.innerHTML = `
+    <div class="d-flex align-items-start">
+      <i class="fas fa-robot me-2 mt-1"></i>
+      <div>
+        <div class="fw-bold mb-1">AI Summary</div>
+        <div>Generating AI summary…</div>
+      </div>
+    </div>
+  `;
+}
+
+if (typeof window.displayChatbotSummary !== 'function') {
+    window.displayChatbotSummary = function (payload) {
+      const box = document.getElementById('chatbotBox');
+      if (!box) return;
+
+      if (!payload) {
+        box.style.display = 'none';
+        box.innerHTML = '';
+        return;
+      }
+
+      const ok = ('ok' in payload) ? payload.ok : payload.success;
+      const summary = payload.summary || payload.response || (payload.raw && payload.raw.response) || '';
+      const audio = payload.audio_url;
+
+      if (ok && summary) {
+        box.style.display = 'block';
+        box.className = 'alert alert-info';
+        box.innerHTML = `
+          <div class="d-flex align-items-start">
+            <i class="fas fa-robot me-2 mt-1"></i>
+            <div style="flex:1;">
+              <div class="fw-bold mb-1">AI Summary</div>
+              <div id="chatbotSummaryText" style="white-space:pre-wrap;"></div>
+            </div>
+          </div>
+        `;
+        const textEl = document.getElementById('chatbotSummaryText');
+        if (textEl) textEl.textContent = summary;
+      } else {
+        box.style.display = 'block';
+        box.className = 'alert alert-warning';
+        box.textContent = payload.error
+          ? `Chatbot: ${payload.error}`
+          : 'Chatbot could not produce a summary.';
+      }
+    };
+}
+
+async function performSearch() {
+  const queryElement = document.getElementById('searchQuery');
+  if (!queryElement) { showAlert('Search input not found', 'danger'); return; }
+  const query = queryElement.value.trim();
+  if (!query) { showAlert('Please enter a search query', 'warning'); return; }
+
+   showLoading();
+   showChatbotLoading();
+
+  const source   = document.getElementById('dataSource')?.value || '';
+  const date_from = document.getElementById('dateFrom')?.value || '';
+  const date_to   = document.getElementById('dateTo')?.value || '';
+
+  try {
+    if (source && source.toLowerCase().includes('osdr')) {
+      const params = new URLSearchParams();
+      if (date_from) params.append('date_from', date_from);
+      if (date_to)   params.append('date_to', date_to);
+      params.append('term', query);
+      params.append('limit', '15');
+      const resp = await fetch(`/api/osdr/search?${params.toString()}`);
+      const data = await resp.json();
+      displayChatbotSummary(data.chatbot);
+
+      hideLoading();
+      if (!data.success) throw new Error(data.error || 'Search failed');
+      const results = data.results || data.papers || [];
+      searchResults = results;
+      displaySearchResults(results, data.query || query, data.total_results || results.length);
+      showAlert(`Found ${data.total_results || results.length} results for "${data.query || query}"`, 'success');
+      return;
+    }
+
+    if (source === 'Europe PMC') {
+        const params = new URLSearchParams();
+        params.append('query', query);
+        if (date_from) params.append('date_from', date_from);
+        if (date_to)   params.append('date_to', date_to);
+        params.append('limit', '15');
+
+        const resp = await fetch(`/api/europepmc/search?${params.toString()}`);
+        if (!resp.ok) throw new Error('Europe PMC API failed');
+        const data = await resp.json();
+        displayChatbotSummary(data.chatbot);
+
+
+        const results = (data.results || []).map(r => ({
+        title: r.title || '',
+        authors: r.authors || [],
+        publication_date: r.publication_date || r.date || '',
+        source: source,
+        doi: r.doi || null,
+        abstract: r.abstract || '',
+        url: r.url || null,
+        keywords: r.keywords || null,
+        sentiment: r.sentiment || null,
+        objective: r.objective || null
+        }));
+
+        searchResults = results;
+        displaySearchResults(results, query, results.length);
+        hideLoading();
+        return;
+    }
+
+    if (source === 'SB_Publication') {
+        const params = new URLSearchParams();
+        params.append('q', query);
+        if (date_from) params.append('date_from', date_from);
+        if (date_to)   params.append('date_to', date_to);
+        params.append('limit', '15');
+
+        const resp = await fetch(`/api/sb_publication/search?${params.toString()}`);
+        if (!resp.ok) throw new Error('SB Publication API failed');
+        const data = await resp.json();
+        displayChatbotSummary(data.chatbot);
+
+        const results = (data.results || []).map(r => ({
+            title: r.title || '',
+            authors: r.authors || [],
+            publication_date: r.publication_date || r.date || '',
+            source: source,
+            doi: r.doi || null,
+            abstract: r.abstract || '',
+            url: r.url || null,
+            keywords: r.keywords || null,
+            sentiment: r.sentiment || null,
+            objective: r.objective || null
+        }));
+
+    searchResults = results;
+    displaySearchResults(results, query, results.length);
+    hideLoading();
+    return;
+}
+
+    if (source === 'NASA_TaskBook') {
+        try {
+            const params = new URLSearchParams();
+            if (date_from) params.append('date_from', date_from);
+            if (date_to)   params.append('date_to', date_to);
+            params.append('q', query);
+            params.append('limit', '3');  
+            params.append('headless', 'true');      
+
+            const resp = await fetch(`/api/taskbook/search?${params.toString()}`);
+            const data = await resp.json();
+            displayChatbotSummary(data.chatbot);
+
+            hideLoading();
+
+            if (!data.success) {
+                throw new Error(data.error || 'NASA TaskBook search failed');
+            }
+
+            const results = data.results || [];
+            searchResults = results;
+
+            displaySearchResults(results, data.query || query, data.count || results.length);
+
+            showAlert(
+                `Found ${data.count || results.length} NASA TaskBook results for "${data.query || query}"`,
+                'success'
+            );
+            return;
+        } catch (err) {
+            console.error('[NASA_TaskBook] Error:', err);
+            hideLoading();
+            showAlert(err.message || 'NASA TaskBook search failed', 'danger');
+            return;
+        }
+    }
+
+
+    if (source === 'nslsl') {
+        const params = new URLSearchParams();
+        if (date_from) params.append('date_from', date_from);
+        if (date_to)   params.append('date_to', date_to);
+        params.append('q', query);
+        params.append('limit', '3'); 
+
+        const resp = await fetch(`/api/nslsl/search?${params.toString()}`);
+        if (!resp.ok) throw new Error('NSLSL API failed');
+        const data = await resp.json();
+        displayChatbotSummary(data.chatbot);
+
+        hideLoading();
+
+        if (!data.success && !data.results) throw new Error(data.error || 'NSLSL search failed');
+
+        const results = (data.results || []).map(r => ({
+            title: r.title || '',
+            authors: r.authors || [],
+            publication_date: r.publication_date || r.date || '',
+            source: r.source || 'NSLSL Scraper',
+            doi: r.doi || null,
+            abstract: r.abstract || '',
+            url: r.url || null,
+            keywords: r.keywords || [],
+            journal: r.journal || null,
+            summary: r.summary || null,
+            sentiment: r.sentiment || null,
+            objective: r.objective || null
+        }));
+
+        searchResults = results;
+        displaySearchResults(results, data.query || query, results.length);
+        showAlert(`Found ${data.count || results.length} NSLSL results for "${data.query || query}"`, 'success');
+        return;
+    }
+
+    if (source === 'bioRxiv' || source === 'medRxiv') {
+        const params = new URLSearchParams();
+        params.append('q', query);
+        
+        if (date_from) params.append('from', date_from);
+        if (date_to)   params.append('to', date_to);
+
+        params.append('limit', '15');
+        params.append('mode', 'ANY');
+        params.append('server', source === 'bioRxiv' ? 'biorxiv' : 'medrxiv');
+
+        const resp = await fetch(`/api/biorxiv/search?${params.toString()}`);
+        if (!resp.ok) throw new Error('bioRxiv/medRxiv API failed');
+        const data = await resp.json();
+        displayChatbotSummary(data.chatbot);
+
+        const results = (data.results || []).map(r => ({
+        title: r.title || '',
+        authors: r.authors || [],
+        publication_date: r.publication_date || r.date || '',
+        source: source,
+        doi: r.doi || null,
+        abstract: r.abstract || '',
+        url: r.url || null,
+        keywords: r.keywords || null,
+        sentiment: r.sentiment || null,
+        objective: r.objective || null
+        }));
+
+
+        searchResults = results;
+        displaySearchResults(results, query, results.length);
+        hideLoading();
+        return;
+    }
+
+    if (source === 'OpenAlex') {
+    const params = new URLSearchParams();
+    params.append('q', query);
+    if (date_from) params.append('date_from', date_from);
+    if (date_to)   params.append('date_to', date_to);
+    params.append('limit', '15');
+
+    const resp = await fetch(`/api/openalex/search?${params.toString()}`);
+    const data = await resp.json();
+    displayChatbotSummary(data.chatbot);
+
+    hideLoading();
+
+    if (!data.success) throw new Error(data.error || 'OpenAlex search failed');
+    const results = data.results || [];
+    searchResults = results;
+    displaySearchResults(results, data.query || query, data.count || results.length);
+    showAlert(`Found ${data.count || results.length} OpenAlex results for "${data.query || query}"`, 'success');
+    return;
+    }
+
+    if (source === 'NCBI GEO') {
+        const params = new URLSearchParams();
+        params.append('q', query);
+        if (date_from) params.append('date_from', date_from);
+        if (date_to)   params.append('date_to', date_to);
+        params.append('limit', '15');
+
+        const resp = await fetch(`/api/geo/search?${params.toString()}`);
+        const data = await resp.json();
+        displayChatbotSummary(data.chatbot);
+
+        hideLoading();
+
+        if (!data.success && !data.results) throw new Error(data.error || 'NCBI GEO search failed');
+        const results = data.results || [];
+        searchResults = results;
+        displaySearchResults(results, data.query || query, data.count || results.length);
+        showAlert(`Found ${data.count || results.length} GEO datasets for "${data.query || query}"`, 'success');
+        return;
+    }
+
+    if (source === 'Crossref') {
+    const params = new URLSearchParams();
+    if (date_from) params.append('date_from', date_from);
+    if (date_to)   params.append('date_to', date_to);
+    params.append('q', query);
+    params.append('limit', '15');
+
+    const resp = await fetch(`/api/crossref/search?${params.toString()}`);
+    const data = await resp.json();
+    displayChatbotSummary(data.chatbot);
+
+    hideLoading();
+
+    if (!data.success && !data.results) throw new Error(data.error || 'Crossref search failed');
+    const results = data.results || [];
+    searchResults = results;
+    displaySearchResults(results, data.query || query, data.count || results.length);
+    showAlert(`Found ${data.count || results.length} Crossref results for "${data.query || query}"`, 'success');
+    return;
+    }
+
+    if (!source) {
+      const q1 = new URLSearchParams();
+      q1.append('query', query);
+      if (date_from) q1.append('date_from', date_from);
+      if (date_to)   q1.append('date_to', date_to);
+      q1.append('limit', '2');
+
+      const q2 = new URLSearchParams();
+      q2.append('term', query);
+      q2.append('limit', '15');
+
+      const [respGeneral, respOsdr] = await Promise.all([
+        fetch(`/api/search?${q1.toString()}`),
+        fetch(`/api/osdr/search?${q2.toString()}`)
+      ]);
+
+      const [dataGeneral, dataOsdr] = await Promise.all([respGeneral.json(), respOsdr.json()]);
+      displayChatbotSummary(dataGeneral.chatbot || dataOsdr.chatbot);
+      hideLoading();
+
+      if (!dataGeneral.success && !dataOsdr.success) {
+        throw new Error((dataGeneral.error || dataOsdr.error) || 'Search failed');
+      }
+
+    const norm = r => ({
+    title: r.title || r.name || 'No title',
+    authors: Array.isArray(r.authors) ? r.authors : (r.authors ? [r.authors] : []),
+    source: r.source || 'Unknown Source',
+    publication_date: r.publication_date || r.date || null,
+    abstract: r.abstract || r.description || '',
+    keywords: r.keywords || [],
+    summary: r.summary || '',
+    url: r.url || r.link || null,
+    sentiment: r.sentiment || null,
+    objective: r.objective || null
+    });
+
+    const gResults = (dataGeneral.results || dataGeneral.papers || []).map(norm);
+    const oResults = (dataOsdr.results || dataOsdr.papers || []).map(r => ({ ...norm(r), source: 'OSDR/GeneLab' }));
+
+    const seen = new Set();
+    const merged = [...gResults, ...oResults].filter(it => {
+    const key = it.url || it.title;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+    });
+
+
+      searchResults = merged;
+      displaySearchResults(merged, query, merged.length);
+      showAlert(`Found ${merged.length} results for "${query}"`, 'success');
+      return;
+    }
+
+    const params = new URLSearchParams();
+    params.append('query', query);
+    params.append('source', source);
+    if (date_from) params.append('date_from', date_from);
+    if (date_to)   params.append('date_to', date_to);
+    params.append('limit', '15');
+
+    const response = await fetch(`/api/search?${params.toString()}`);
+    const data = await response.json();
+    displayChatbotSummary(data.chatbot);
+    hideLoading();
+    if (!data.success) throw new Error(data.error || 'Search failed');
+    const results = data.results || data.papers || [];
+    searchResults = results;
+    displaySearchResults(results, data.query || query, data.total_results || results.length);
+    showAlert(`Found ${data.total_results || results.length} results for "${data.query || query}"`, 'success');
+
+  } catch (error) {
+    hideLoading();
+    console.error('Search error:', error);
+    showAlert(`Search failed: ${error.message}`, 'danger');
+    displaySearchResults([], query);
+  }
+}
+
+
+
+function getValue(elementId) {
+    const element = document.getElementById(elementId);
+    return element ? element.value : '';
+}
+
+function escapeHtml(unsafe) {
+    if (!unsafe && unsafe !== 0) return '';
+    return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function formatDate(d) {
+    if (!d) return '';
+    const dt = new Date(d);
+    return isNaN(dt) ? d : dt.toLocaleDateString();
+}
+
+function createGradient(ctx, colorStart, colorEnd) {
+    const grad = ctx.createLinearGradient(0, 0, 0, 400);
+    grad.addColorStop(0, colorStart);
+    grad.addColorStop(1, colorEnd);
+    return grad;
+}
+
+let searchState = {
+    resultsDisplayed: 0,
+    currentResults: []
+};
+
+function displaySearchResults(results, query = '', total = null) {
+    const container = document.getElementById('searchResults');
+    const countElement = document.getElementById('resultsCount');
+
+    searchState.currentResults = results || [];
+    searchState.resultsDisplayed = 0;
+
+    if (!container) return;
+
+    if (countElement) {
+        const totalDisplay = total !== null ? total : (results ? results.length : 0);
+        countElement.textContent = `${totalDisplay} results${query ? ` for "${query}"` : ''}`;
+    }
+
+    if (!results || results.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state text-center">
+                <i class="fas fa-search empty-icon mb-2"></i>
+                <h6>No Results Found</h6>
+                <p>Try adjusting your search query or filters</p>
+                <div class="mt-3">
+                    <strong>Popular Searches:</strong><br>
+                    <button class="btn btn-link btn-sm" onclick="quickSearch('microgravity')">microgravity effects</button>
+                    <button class="btn btn-link btn-sm" onclick="quickSearch('space radiation')">space radiation</button>
+                    <button class="btn btn-link btn-sm" onclick="quickSearch('plant biology')">plant biology ISS</button>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = ''; 
+    showMoreResults(query);
+
+    try { 
+    loadAiAnalysis(query); 
+    } catch (e) { 
+    console.warn('AI analysis failed', e); 
+    }
+
+}
+
+function showMoreResults(query = '') {
+    const container = document.getElementById('searchResults');
+    if (!container) return;
+
+    const batchSize = 5;
+    const prevBtn = document.getElementById('seeAllBtn');
+    if (prevBtn) prevBtn.remove();
+
+    const { currentResults, resultsDisplayed } = searchState;
+    const nextResults = currentResults.slice(resultsDisplayed, resultsDisplayed + batchSize);
+
+    nextResults.forEach(result => {
+        let keywords = [];
+        if (Array.isArray(result.keywords)) keywords = result.keywords;
+        else if (typeof result.keywords === 'string') {
+            try { keywords = JSON.parse(result.keywords); } 
+            catch { keywords = [result.keywords]; }
+        }
+
+        const authors = Array.isArray(result.authors) 
+            ? result.authors.join(', ') 
+            : (result.authors || 'Unknown Authors');
+
+        const pubDateHtml = result.publication_date 
+            ? `<span class="ms-2"><i class="fas fa-calendar me-1"></i>${formatDate(result.publication_date)}</span>` 
+            : '';
+
+        let sentimentBadge = '';
+        if (result.sentiment) {
+            let badgeClass = 'badge-neutral';
+            let icon = 'fa-meh';
+
+            if (result.sentiment === 'positive') { 
+                badgeClass = 'badge-success'; 
+                icon = 'fa-smile'; 
+            }
+            else if (result.sentiment === 'negative') { 
+                badgeClass = 'badge-danger'; 
+                icon = 'fa-frown'; 
+            }
+
+            sentimentBadge = `<span class="badge ${badgeClass} ms-2">
+                                <i class="fas ${icon} me-1"></i>${escapeHtml(result.sentiment)}
+                            </span>`;
+        }
+
+        const viewLink = result.url 
+            ? `<a href="${result.url}" target="_blank" class="btn btn-sm btn-outline-success ms-2">
+                <i class="fas fa-external-link-alt me-1"></i> View
+            </a>` 
+            : '';
+
+        const html = `
+        <div class="search-result">
+            <div class="result-title">${escapeHtml(result.title || 'No title')}</div>
+            <div class="result-authors"><i class="fas fa-users me-1"></i>${escapeHtml(authors)}</div>
+            <div class="result-abstract">
+                ${result.abstract ? escapeHtml(result.abstract.substring(0, 300)) + (result.abstract.length > 300 ? '' : '') : 'No abstract available'}
+            </div>
+            ${result.objective ? `<div class="result-objective mb-2">
+                    <i class="fas fa-bullseye me-1 text-info"></i>
+                    <strong>Objective:</strong> ${escapeHtml(result.objective)}
+                </div>` : ''}
+            <div class="result-actions mb-2">
+                <button class="btn btn-outline-primary btn-sm play-btn"><i class="fas fa-play"></i></button>
+                <div class="player-container mt-2" style="display:none;"></div>
+            </div>
+            <div class="result-meta d-flex flex-wrap align-items-center">
+                <div class="result-keywords me-3 mb-2">
+                    ${keywords.map(k => `<span class="keyword-tag">${escapeHtml(k)}</span>`).join('')}
+                </div>
+                <div class="result-info">
+                    <span class="badge bg-primary">${escapeHtml(result.source || 'Unknown Source')}</span>
+                    ${pubDateHtml}
+                    ${viewLink}
+                    ${sentimentBadge}
+                </div>
+            </div>
+        </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+    });
+
+    searchState.resultsDisplayed += nextResults.length;
+
+    if (searchState.resultsDisplayed < searchState.currentResults.length) {
+        const seeAllBtn = document.createElement('button');
+        seeAllBtn.id = 'seeAllBtn';
+        seeAllBtn.className = 'btn btn-outline-primary d-block mx-auto my-3';
+        seeAllBtn.textContent = 'See More...';
+        seeAllBtn.onclick = () => {
+            showMoreResults(query);
+        };
+        container.appendChild(seeAllBtn);
+    }
+}
+
+function createGradient(ctx, c1, c2) {
+  const g = ctx.createLinearGradient(0, 0, 0, 300);
+  g.addColorStop(0, c1);
+  g.addColorStop(1, c2);
+  return g;
+}
+
+
+async function loadAiAnalysis(query) {
+    const container = document.getElementById('searchResults');
+    if (!container) return;
+
+    const prev = document.getElementById('aiAnalysisContainer');
+    if (prev) prev.remove();
+
+    const analysisDiv = document.createElement('div');
+    analysisDiv.id = 'aiAnalysisContainer';
+    analysisDiv.className = 'mt-4 p-3 border rounded bg-dark text-light';
+    analysisDiv.innerHTML = `<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Running AI Analysis...</div>`;
+    container.appendChild(analysisDiv);
+
+    try {
+        const response = await fetch(`/api/ai_Analysis?q=${encodeURIComponent(query)}`);
+        if (!response.ok) {
+            analysisDiv.innerHTML = `<div class="alert alert-danger">AI Analysis error: ${response.status}</div>`;
+            return;
+        }
+        const data = await response.json();
+
+        analysisDiv.innerHTML = `
+            <h5><i class="fas fa-brain me-2"></i> AI Analysis for "${escapeHtml(data.query || query)}"</h5>
+            <p><strong>Sentiment:</strong> Positive: ${data.sentiment?.positive || 0} — Neutral: ${data.sentiment?.neutral || 0} — Negative: ${data.sentiment?.negative || 0}</p>
+            <p><strong>Top Keywords:</strong> ${(data.keywords || []).map(k => `${escapeHtml(k.word)} (${k.count})`).join(', ')}</p>
+            <p><strong>Top Topics:</strong> ${Object.entries(data.topics || {}).map(([k,v]) => `${escapeHtml(k)} (${v})`).join(', ')}</p>
+
+            <canvas id="sentimentChart" height="120"></canvas>
+            <canvas id="keywordChart" height="120" class="mt-4"></canvas>
+            <canvas id="topicChart" height="120" class="mt-4"></canvas>
+        `;
+
+        if (typeof Chart !== 'undefined') {
+            
+            const sCtx = document.getElementById('sentimentChart').getContext('2d');
+            new Chart(sCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Positive', 'Negative', 'Neutral'],
+                    datasets: [{
+                        label: 'Articles',
+                        data: [
+                            data.sentiment?.positive || 0,
+                            data.sentiment?.negative || 0,
+                            data.sentiment?.neutral || 0
+                        ],
+                        backgroundColor: [
+                            createGradient(sCtx,'#00ffcc','#0099cc'),
+                            createGradient(sCtx,'#ff4c4c','#cc0000'),
+                            createGradient(sCtx,'#ffd700','#ffcc00')
+                        ],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive:true,
+                    plugins:{legend:{labels:{color:'#fff'}}, tooltip:{mode:'index',intersect:false}},
+                    scales:{
+                        x:{ticks:{color:'#fff'},grid:{color:'rgba(255,255,255,0.05)'}},
+                        y:{ticks:{color:'#fff'},grid:{color:'rgba(255,255,255,0.05)'}}
+                    },
+                    animation:{duration:1500,easing:'easeOutBounce'}
+                }
+            });
+
+            
+            const kCtx = document.getElementById('keywordChart').getContext('2d');
+            new Chart(kCtx, {
+                type:'bar',
+                data:{
+                    labels:(data.keywords || []).map(k => k.word),
+                    datasets:[{
+                        label:'Keyword Frequency',
+                        data:(data.keywords || []).map(k => k.count),
+                        backgroundColor:(data.keywords || []).map((_,i)=>createGradient(kCtx, `hsl(${i*50}, 100%, 50%)`,`hsl(${i*50}, 70%, 30%)`)),
+                        borderRadius: 6
+                    }]
+                },
+                options:{
+                    responsive:true,
+                    plugins:{legend:{labels:{color:'#fff'}}, tooltip:{mode:'index',intersect:false}},
+                    scales:{
+                        x:{ticks:{color:'#fff'},grid:{color:'rgba(255,255,255,0.05)'}},
+                        y:{ticks:{color:'#fff'},grid:{color:'rgba(255,255,255,0.05)'}}
+                    },
+                    animation:{duration:1500,easing:'easeOutBounce'}
+                }
+            });
+
+            
+            const tCtx = document.getElementById('topicChart').getContext('2d');
+            new Chart(tCtx,{
+                type:'bar',
+                data:{
+                    labels:Object.keys(data.topics || {}),
+                    datasets:[{
+                        label:'Main Topics',
+                        data:Object.values(data.topics || {}),
+                        backgroundColor:Object.keys(data.topics || {}).map((_,i)=>createGradient(tCtx, `#764ba2`, `hsl(${i*40}, 60%, 50%)`)),
+                        borderRadius: 6
+                    }]
+                },
+                options:{
+                    responsive:true,
+                    plugins:{legend:{labels:{color:'#fff'}}, tooltip:{mode:'index',intersect:false}},
+                    scales:{
+                        x:{ticks:{color:'#fff'},grid:{color:'rgba(255,255,255,0.05)'}},
+                        y:{ticks:{color:'#fff'},grid:{color:'rgba(255,255,255,0.05)'}}
+                    },
+                    animation:{duration:1500,easing:'easeOutBounce'}
+                }
+            });
+        }
+
+    } catch(err) {
+        console.error(err);
+        analysisDiv.innerHTML = `<div class="alert alert-danger">Error loading AI Analysis</div>`;
+    }
+}
+
+
+
+async function generateGraph() {
+    showLoading();
+
+    const maxNodes = document.getElementById('maxNodes') ? document.getElementById('maxNodes').value : '50';
+    const query = document.getElementById('graphQuery') ? document.getElementById('graphQuery').value : '';
+
+    try {
+        const queryParams = new URLSearchParams();
+        queryParams.append('max_nodes', maxNodes);
+        if (query) queryParams.append('query', query);
+
+        const response = await fetch(`/api/knowledge-graph?${queryParams.toString()}`);
+        const data = await response.json();
+
+        hideLoading();
+
+        if (data.success && data.graph) {
+            const graphPayload = data.graph;
+            graphPayload.total_nodes = graphPayload.total_nodes || (graphPayload.nodes ? graphPayload.nodes.length : 0);
+            graphPayload.total_links = graphPayload.total_links || (graphPayload.links ? graphPayload.links.length : 0);
+
+            graphData = graphPayload;
+            displayKnowledgeGraph(graphPayload);
+            updateGraphStats(graphPayload);
+            showAlert('Knowledge graph generated successfully', 'success');
+        } else {
+            throw new Error(data.error || 'Failed to generate graph');
+        }
+    } catch (error) {
+        hideLoading();
+        console.error('Graph generation error:', error);
+        showAlert(`Failed to generate knowledge graph: ${error.message}`, 'danger');
+        displayKnowledgeGraph({nodes: [], links: []});
+    }
+}
+
+function displayKnowledgeGraph(graph) {
+    const container = document.getElementById('knowledgeGraph'); 
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (!graph.nodes || graph.nodes.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-project-diagram empty-icon"></i>
+                <h6>No Graph Data Available</h6>
+                <p>No research papers found to generate knowledge graph</p>
+                <button class="btn btn-primary btn-sm mt-2" onclick="switchTab('search')">
+                    <i class="fas fa-search me-1"></i>Search for Papers
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    if (typeof d3 === 'undefined') {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle empty-icon"></i>
+                <h6>Visualization Library Missing</h6>
+                <p>D3.js library is required for graph visualization</p>
+                <small>Please include D3.js in your HTML head section</small>
+            </div>
+        `;
+        return;
+    }
+
+    try {
+        createD3Graph(container, graph);
+    } catch (error) {
+        console.error('Error creating graph:', error);
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle empty-icon"></i>
+                <h6>Graph Rendering Error</h6>
+                <p>Unable to render knowledge graph visualization</p>
+            </div>
+        `;
+    }
+}
+
+function createD3Graph(container, graph) {
+    const width = container.clientWidth || 800;
+    const height = container.clientHeight || 600;
+
+    const svg = d3.select(container)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .style('background', '#fafafa')
+        .style('border', '1px solid #e0e0e0')
+        .style('border-radius', '8px');
+
+    const g = svg.append('g');
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on('zoom', (event) => {
+            g.attr('transform', event.transform);
+        });
+    
+    svg.call(zoom);
+
+    const validNodes = new Set(graph.nodes.map(n => n.id));
+    graph.links = graph.links.filter(
+        l => validNodes.has(l.source) && validNodes.has(l.target)
+    );
+
+    const simulation = d3.forceSimulation(graph.nodes)
+        .force('link', d3.forceLink(graph.links).id(d => d.id).distance(100))
+        .force('charge', d3.forceManyBody().strength(d => d.type === 'paper' ? -400 : -200))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(d => (d.value || 10) + 5));
+
+    const link = g.append('g')
+        .selectAll('line')
+        .data(graph.links)
+        .enter().append('line')
+        .attr('stroke', '#999')
+        .attr('stroke-opacity', 0.6)
+        .attr('stroke-width', d => Math.sqrt((d.value || 1) * 3));
+
+    const node = g.append('g')
+        .selectAll('circle')
+        .data(graph.nodes)
+        .enter().append('circle')
+        .attr('r', d => (d.value || 5) + 3)
+        .attr('fill', d => getNodeColor(d.type))
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 2)
+        .style('cursor', 'pointer')
+        .call(d3.drag()
+            .on('start', dragstarted)
+            .on('drag', dragged)
+            .on('end', dragended));
+
+    const label = g.append('g')
+        .selectAll('text')
+        .data(graph.nodes)
+        .enter().append('text')
+        .text(d => d.name.length > 25 ? d.name.substring(0, 22) + '...' : d.name)
+        .attr('font-size', '11px')
+        .attr('font-family', 'Arial, sans-serif')
+        .attr('dx', 15)
+        .attr('dy', 4)
+        .attr('fill', '#333');
+
+    node.append('title')
+        .text(d => {
+            let tooltip = `${d.name}\nType: ${d.type}`;
+            if (d.category) tooltip += `\nCategory: ${d.category}`;
+            if (d.confidence) tooltip += `\nConfidence: ${d.confidence}`;
+            return tooltip;
+        });
+
+    node.on('click', function(event, d) {
+        event.stopPropagation();
+        showNodeDetails(d);
+    });
+
+    simulation.on('tick', () => {
+        link
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+
+        node
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y);
+
+        label
+            .attr('x', d => d.x)
+            .attr('y', d => d.y);
+    });
+
+    function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+    }
+
+    function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+
+    const legend = svg.append('g')
+        .attr('transform', 'translate(20, 20)');
+
+    const legendData = [
+        {type: 'paper', color: '#1f77b4', label: 'Research Papers'},
+        {type: 'concept', color: '#ff7f0e', label: 'Concepts'},
+        {type: 'category', color: '#2ca02c', label: 'Categories'}
+    ];
+
+    const legendItems = legend.selectAll('.legend-item')
+        .data(legendData)
+        .enter().append('g')
+        .attr('class', 'legend-item')
+        .attr('transform', (d, i) => `translate(0, ${i * 25})`);
+
+    legendItems.append('circle')
+        .attr('r', 8)
+        .attr('fill', d => d.color)
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 1);
+
+    legendItems.append('text')
+        .attr('x', 15)
+        .attr('y', 5)
+        .attr('font-size', '12px')
+        .attr('fill', '#333')
+        .text(d => d.label);
+}
+
+function getNodeColor(type) {
+    const colors = {
+        'paper': '#1f77b4',
+        'concept': '#ff7f0e',
+        'category': '#2ca02c'
+    };
+    return colors[type] || '#7f7f7f';
+}
+
+function showNodeDetails(node) {
+    let details = `<strong>${node.name}</strong><br>`;
+    details += `Type: ${node.type}<br>`;
+    if (node.category) details += `Category: ${node.category}<br>`;
+    if (node.confidence) details += `Confidence: ${node.confidence}<br>`;
+
+    showAlert(details, 'info');
+}
+
+function updateGraphStats(graph) {
+    const nodesCount = graph.total_nodes || (graph.nodes ? graph.nodes.length : 0);
+    const linksCount = graph.total_links || (graph.links ? graph.links.length : 0);
+    const density = nodesCount > 1 ? ((2 * linksCount) / (nodesCount * (nodesCount - 1))).toFixed(2) : '0.00';
+
+    const nEl = document.getElementById('graphNodes');
+    const eEl = document.getElementById('graphEdges');
+    const dEl = document.getElementById('graphDensity');
+
+    if (nEl) nEl.textContent = nodesCount;
+    if (eEl) eEl.textContent = linksCount;
+    if (dEl) dEl.textContent = density;
+}
+
+function exportGraph() {
+    if (!graphData) {
+        showAlert('No graph data to export', 'warning');
+        return;
+    }
+
+    const dataStr = JSON.stringify(graphData, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `knowledge_graph_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    showAlert('Graph data exported successfully', 'success');
+}
+
+function analyzeGraph() {
+    if (!graphData) {
+        showAlert('No graph data to analyze', 'warning');
+        return;
+    }
+
+    const analysis = {
+        totalNodes: graphData.total_nodes || graphData.nodes.length,
+        totalLinks: graphData.total_links || graphData.links.length,
+        paperNodes: graphData.nodes.filter(n => n.type === 'paper').length,
+        conceptNodes: graphData.nodes.filter(n => n.type === 'concept').length,
+        density: graphData.total_nodes > 1 ? 
+            ((2 * (graphData.total_links || graphData.links.length)) / (graphData.total_nodes * (graphData.total_nodes - 1))).toFixed(3) : 0
+    };
+
+    const message = `
+        <strong>Graph Analysis:</strong><br>
+        • Total Nodes: ${analysis.totalNodes}<br>
+        • Total Connections: ${analysis.totalLinks}<br>
+        • Research Papers: ${analysis.paperNodes}<br>
+        • Concepts: ${analysis.conceptNodes}<br>
+        • Network Density: ${analysis.density}
+    `;
+
+    showAlert(message, 'info');
+}
+
+async function loadReportData() {
+    generateReport();
+}
+
+async function generateReport() {
+    showLoading();
+
+    const dateFrom = document.getElementById('reportDateFrom') ? document.getElementById('reportDateFrom').value : '';
+    const dateTo = document.getElementById('reportDateTo') ? document.getElementById('reportDateTo').value : '';
+    let queryParams = new URLSearchParams();
+
+    try {
+        if (dateFrom && dateTo) {
+            const from = new Date(dateFrom);
+            const to = new Date(dateTo);
+            let days = Math.round((to - from) / (1000 * 60 * 60 * 24)) + 1;
+            if (days <= 0) days = 30;
+            queryParams.append('days', String(days));
+        }
+
+        const response = await fetch(`/api/reports/activity?${queryParams.toString()}`);
+        const data = await response.json();
+
+        hideLoading();
+
+        if (data.success && data.report) {
+            reportData = data.report;
+            displayReport(data.report);
+            showAlert('Report generated successfully', 'success');
+        } else {
+            throw new Error(data.error || 'Failed to generate report');
+        }
+    } catch (error) {
+        hideLoading();
+        console.error('Report generation error:', error);
+        showAlert(`Failed to generate report: ${error.message}`, 'danger');
+
+        displayReport({
+            summary: { total_searches: 0, total_results: 0, average_results_per_search: 0 },
+            daily_activity: []
+        });
+    }
+}
+
+function displayReport(report) {
+    const summary = report.summary || {};
+
+    const elTotalSearches = document.getElementById('reportTotalSearches');
+    const elTotalResults = document.getElementById('reportTotalResults');
+    const elAvgResults = document.getElementById('reportAvgResults');
+    const elActiveUsers = document.getElementById('reportActiveUsers');
+
+    if (elTotalSearches) elTotalSearches.textContent = summary.total_searches || 0;
+    if (elTotalResults) elTotalResults.textContent = summary.total_results || 0;
+    if (elAvgResults) elAvgResults.textContent = (summary.average_results_per_search || 0).toFixed(1);
+    if (elActiveUsers) elActiveUsers.textContent = summary.unique_queries || 1;
+
+    const container = document.getElementById('reportContent');
+    if (!container) return;
+
+    const daily = report.daily_activity || [];
+    if (daily.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-chart-bar empty-icon"></i>
+                <h6>No Report Data Available</h6>
+                <p>No search activity found for the selected time period</p>
+                <button class="btn btn-primary btn-sm mt-2" onclick="switchTab('search')">
+                    <i class="fas fa-search me-1"></i>Start Searching
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    const rows = daily.map(d => `
+        <div class="search-result">
+            <div class="result-title">${escapeHtml(d.date)}</div>
+            <div class="result-meta">
+                <span><i class="fas fa-search me-1"></i>${d.searches} searches</span>
+                <span class="ms-2"><i class="fas fa-list me-1"></i>${d.total_results} results</span>
+                <span class="ms-2"><i class="fas fa-chart-line me-1"></i>${d.unique_queries} unique queries</span>
+            </div>
+        </div>
+    `).join('');
+
+    container.innerHTML = `<div class="report-section"><h6><i class="fas fa-history me-2"></i>Daily Activity</h6>${rows}</div>`;
+}
+
+function refreshReport() {
+    generateReport();
+}
+
+async function exportReport() {
+    if (!reportData) {
+        showAlert('No report data to export', 'warning');
+        return;
+    }
+
+    try {
+        const csvContent = generateReportCSV(reportData);
+        downloadCSV(csvContent, `activity_report_${new Date().toISOString().split('T')[0]}.csv`);
+        showAlert('Report exported successfully', 'success');
+    } catch (error) {
+        console.error('Export error:', error);
+        showAlert('Failed to export report', 'danger');
+    }
+}
+
+function generateReportCSV(report) {
+    const headers = ['Query', 'Results Count', 'Search Time', 'User IP'];
+    const rows = (report.recent_searches || []).map(search => [
+        `"${search.query}"`,
+        search.results_count,
+        `"${search.search_time}"`,
+        `"${search.user_ip || 'Unknown'}"`
+    ]);
+
+    return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+}
+
+function exportData() {
+    if (currentTab === 'search' && searchResults.length > 0) {
+        exportResults();
+    } else if (currentTab === 'graph' && graphData) {
+        exportGraph();
+    } else if (currentTab === 'reports' && reportData) {
+        exportReport();
+    } else {
+        showAlert('No data available to export in current tab', 'warning');
+    }
+}
+
+function formatDate(dateString) {
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch (error) {
+        return dateString || 'Unknown';
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function convertToCSV(data) {
+    if (!data || data.length === 0) return '';
+    
+    const headers = ['Title', 'Authors', 'Source', 'Publication Date', 'Abstract', 'Keywords'];
+    const rows = data.map(item => [
+        `"${(item.title || '').replace(/"/g, '""')}"`,
+        `"${Array.isArray(item.authors) ? item.authors.join('; ') : (item.authors || '').replace(/"/g, '""')}"`,
+        `"${(item.source || '').replace(/"/g, '""')}"`,
+        `"${item.publication_date || ''}"`,
+        `"${(item.abstract || '').replace(/"/g, '""')}"`,
+        `"${Array.isArray(item.keywords) ? item.keywords.join('; ') : (item.keywords || '').replace(/"/g, '""')}"`
+    ]);
+
+    return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+}
+
+function downloadCSV(content, filename) {
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+window.addEventListener('error', function(e) {
+    console.error('Global JavaScript error:', e.error);
+    showAlert('An unexpected error occurred. Please refresh the page.', 'danger');
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+    console.error('Unhandled promise rejection:', e.reason);
+    showAlert('An error occurred while processing your request.', 'danger');
+});
+
+let resizeTimeout;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        if (currentTab === 'graph' && graphData && graphData.nodes && graphData.nodes.length > 0) {
+            displayKnowledgeGraph(graphData);
+        }
+    }, 300);
+});
+
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('searchQuery');
+
+        if (searchInput) {
+            switchTab('search');
+            setTimeout(() => searchInput.focus(), 100);
+        }
+    }
+    
+    if (e.key === 'Escape') {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => alert.remove());
+    }
+});
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("theme", theme);
+      const themeToggle = document.getElementById("themeToggle");
+      const themeToggleMobile = document.getElementById("themeToggleMobile");
+      if (themeToggle) {
+        themeToggle.innerHTML = theme === "dark"
+          ? '<i class="fas fa-moon me-1"></i> light theme'
+          : '<i class="fas fa-sun me-1"></i> dark theme';
+      }
+      if (themeToggleMobile) {
+        themeToggleMobile.innerHTML = theme === "dark"
+          ? '<i class="fas fa-moon me-1"></i> light theme'
+          : '<i class="fas fa-sun me-1"></i> dark theme';
+      }
+    }
+
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+
+        setTimeout(() => {
+          switchTab(currentTab || 'dashboard');
+        }, 80);
+    }
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
+
+      const themeToggle = document.getElementById("themeToggle");
+      const themeToggleMobile = document.getElementById("themeToggleMobile");
+      if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
+      if (themeToggleMobile) themeToggleMobile.addEventListener("click", toggleTheme);
+    });
+
+const menuToggle = document.getElementById('menuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+const closeMenu = document.getElementById('closeMenu');
+
+if (menuToggle && mobileMenu && closeMenu && !menuToggle.dataset.menuInit) {
+  menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.add('active');
+    history.pushState({menu: true}, '');
+  });
+
+  closeMenu.addEventListener('click', () => {
+    if (history.state && history.state.menu) {
+      history.back();
+    } else {
+      mobileMenu.classList.remove('active');
+    }
+  });
+
+  window.addEventListener('popstate', (e) => {
+    if (!e.state || !e.state.menu) {
+      mobileMenu.classList.remove('active');
+    }
+  });
+
+  menuToggle.dataset.menuInit = '1';
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("button, a").forEach(el => {
+    if (el.dataset.alertBound) return;
+
+    el.addEventListener("click", function(e) {
+      let label = this.innerText.trim() || this.getAttribute("data-tab") || "Unnamed button";
+      
+      if (this.hasAttribute("data-tab")) {
+        label = this.getAttribute("data-tab");
+      }
+
+    });
+
+    el.dataset.alertBound = "1"; 
+  });
+});
+
+
+
+
+
+
+let currentAudio = null;
+let currentButton = null;
+
+function showToast(message, icon = "info", timer = 2000) {
+  Swal.fire({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: timer,
+    icon: icon,
+    title: message
+  });
+}
+
+document.addEventListener("click", async function (e) {
+  if (e.target.closest(".play-btn")) {
+    const button = e.target.closest(".play-btn");
+    const result = button.closest(".search-result");
+    const playerContainer = result.querySelector(".player-container");
+
+    if (currentButton === button) {
+      if (currentAudio) {
+        if (currentAudio.paused) {
+          currentAudio.play();
+          showToast("Resumed playing", "success");
+        } else {
+          currentAudio.pause();
+          showToast("Paused", "info");
+        }
+      }
+      return;
+    }
+
+    if (currentButton && currentAudio) {
+      currentAudio.pause();
+      currentAudio = null;
+      currentButton = null;
+      showToast("Stopped", "warning");
+    }
+
+    let audioUrl = result.dataset.audioUrl;
+
+    if (!audioUrl) {
+      const title = result.querySelector(".result-title")?.innerText || "";
+      const authors = result.querySelector(".result-authors")?.innerText || "";
+      const abstract = result.querySelector(".result-abstract")?.innerText || "";
+      const objective = result.querySelector(".result-objective")?.innerText || "";
+
+      const text = `Title: ${title}. Authors: ${authors}. Abstract: ${abstract}. Objective: ${objective}.`;
+
+      try {
+        showToast("Processing...", "info", 3000);
+        const response = await fetch("http://127.0.0.1:5001/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: text, lang: "en" })
+        });
+
+        if (!response.ok) throw new Error("TTS API error");
+
+        showToast("Processing done!", "success");
+
+        const blob = await response.blob();
+        audioUrl = URL.createObjectURL(blob);
+        result.dataset.audioUrl = audioUrl;
+
+      } catch (err) {
+        console.error("TTS Error:", err);
+        showToast("Error fetching audio", "error", 4000);
+        return;
+      }
+    }
+
+    playerContainer.innerHTML = `
+      <audio controls>
+        <source src="${audioUrl}" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+    `;
+    playerContainer.style.display = "block";
+
+    button.style.display = "none";
+
+    const audio = playerContainer.querySelector("audio");
+    currentAudio = audio;
+    currentButton = button;
+
+    showToast("Now playing...", "success", 2000);
+    audio.play();
+
+    audio.onended = () => {
+      showToast("Finished", "success", 3000);
+      currentAudio = null;
+      currentButton = null;
+      button.style.display = "inline-block";
+      playerContainer.style.display = "none";
+    };
+  }
+});
+
+function exportResults() {
+  if (!searchResults || !Array.isArray(searchResults) || searchResults.length === 0) {
+    showAlert && showAlert('No results to export', 'warning');
+    return;
+  }
+
+  
+  const escapeCsv = (v) => {
+    if (v === null || v === undefined) v = '';
+    const s = String(v);
+    return '"' + s.replace(/"/g, '""').replace(/\r?\n/g, ' ').replace(/\t/g, ' ') + '"';
+  };
+
+  
+  const toDateYMD = (val) => {
+    if (val === null || val === undefined || val === '') return '';
+    const n = Number(val);
+    if (!isNaN(n)) {
+      const ms = (n > 1e12) ? n : (n > 1e10 ? n : n * 1000);
+      const d = new Date(ms);
+      if (!isNaN(d)) return d.toISOString().split('T')[0];
+    }
+    const d2 = new Date(val);
+    if (!isNaN(d2)) return d2.toISOString().split('T')[0];
+    return String(val);
+  };
+
+  const headers = [
+    'Title','Abstract','Source','Keywords',
+    'Sentiment','Date','Objective','Authors','Link'
+  ];
+  let csv = '\uFEFF' + headers.join(',') + '\n';
+
+  searchResults.forEach(r => {
+    const title = r.title || r.title === 0 ? r.title : '';
+    const abstract = r.abstract || '';
+    const source = r.source || '';
+    const keywords = Array.isArray(r.keywords) ? r.keywords.join('; ') : (r.keywords || '');
+    const objective = r.objective || '';
+    const authors = Array.isArray(r.authors) ? r.authors.join('; ') : (r.authors || '');
+    const link = r.url || r.link || '';
+
+    
+    let sentimentLabel = '';
+    if (r.sentiment !== undefined && r.sentiment !== null) {
+      if (typeof r.sentiment === 'string') {
+        sentimentLabel = r.sentiment;
+      } else if (typeof r.sentiment === 'object') {
+        sentimentLabel = JSON.stringify(r.sentiment);
+      } else {
+        sentimentLabel = String(r.sentiment);
+      }
+    }
+
+    const dateVal = toDateYMD(r.publication_date ?? r.date ?? r.pubdate ?? 'no date');
+
+    const row = [
+      escapeCsv(title),
+      escapeCsv(abstract),
+      escapeCsv(source),
+      escapeCsv(keywords),
+      escapeCsv(sentimentLabel),
+      escapeCsv(dateVal),
+      escapeCsv(objective),
+      escapeCsv(authors),
+      escapeCsv(link)
+    ].join(',');
+
+    csv += row + '\n';
+  });
+
+  try {
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'results.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Export failed:', err);
+    showAlert && showAlert('Export failed: ' + (err && err.message ? err.message : ''), 'danger');
+  }
+}
+
+function quickSearch(query) {
+  const searchQueryElement = document.getElementById('searchQuery'); 
+  if (searchQueryElement) {
+    searchQueryElement.value = query;
+  }
+  if (currentTab !== 'search') switchTab('search');
+  setTimeout(() => performSearch(), 100);
+}
+
+function resetFilters() {
+  const form = document.getElementById('searchForm');
+  if (form) {
+    const query = document.getElementById('searchQuery')?.value || '';
+    form.reset();
+    document.getElementById('searchQuery').value = query;
+  }
+  showAlert('Filters reset', 'info');
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const quickForm = document.getElementById('quickSearchForm');
+  if (quickForm) {
+    quickForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const query = document.getElementById('quickSearchInput').value.trim();
+      if (!query) return;
+
+      
+      switchTab('search');
+
+      
+      document.getElementById('searchQuery').value = query;
+      document.getElementById('dataSource').value = 'SB_Publication';
+
+      
+      performSearch({ limit: 10 });
+    });
+  }
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  const chatbotUrl = "http://127.0.0.1:8000";
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  setTimeout(() => {
+    if (isMobile) {
+      
+      Swal.fire({
+        title: '🤖 Hey buddy! I\'m your ChatBot 🚀',
+        html: `
+          <p style="font-size:1rem; line-height:1.6;">
+            You know what’s interesting? We’re always looking for someone 
+            who can answer fast, give us ideas, and even create images… 🎨<br><br>
+            Well, I’m right here to do that for you! 😎✨<br><br>
+            Let’s go 🚀 Try something new 👇
+          </p>
+        `,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Let’s Go 🚀',
+        cancelButtonText: 'Close ❌',
+        reverseButtons: true,
+        backdrop: `rgba(0,0,0,0.6)`
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = chatbotUrl;
+        }
+      });
+
+    } else {
+      
+      const toastHtml = `
+        <div class="toast align-items-center text-bg-info border-0 show fade" 
+             role="alert" aria-live="assertive" aria-atomic="true"
+             style="position: fixed; bottom: 20px; right: 20px; z-index: 2000; min-width: 360px;">
+          <div class="d-flex flex-column p-3">
+            <div class="toast-body">
+              🤖 Hey buddy!<br>
+              You know what’s interesting? We’re always looking for someone 
+              who can answer fast, give us ideas, and even create images… 🎨<br><br>
+              I’m right here to do that for you! 😎✨
+            </div>
+            <div class="mt-2 text-end">
+              <button class="btn btn-sm btn-light me-2" id="toastGoBtn">Let’s Go 🚀</button>
+              <button class="btn btn-sm btn-outline-light" id="toastCloseBtn">Close ❌</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML("beforeend", toastHtml);
+
+      
+      document.getElementById("toastGoBtn").addEventListener("click", () => {
+        window.location.href = chatbotUrl;
+      });
+      document.getElementById("toastCloseBtn").addEventListener("click", () => {
+        document.querySelectorAll('.toast').forEach(t => t.remove());
+      });
+    }
+  }, 2500);
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const sourcesContainer = document.getElementById("dataSources");
+  const sources = sourcesContainer.querySelectorAll(".col-6");
+  const seeMoreBtn = document.getElementById("seeMoreSources");
+
+  let collapsedCount = 4; 
+  let expanded = false;
+
+  function renderSources() {
+    sources.forEach((src, index) => {
+      if (!expanded && index >= collapsedCount) {
+        src.style.display = "none";
+      } else {
+        src.style.display = "block";
+      }
+    });
+
+    if (expanded) {
+      seeMoreBtn.innerHTML = "See less <i class='fas fa-chevron-up ms-1'></i>";
+    } else {
+      seeMoreBtn.innerHTML = "See more <i class='fas fa-chevron-down ms-1'></i>";
+    }
+  }
+
+  if (sources.length > collapsedCount) {
+    seeMoreBtn.classList.remove("d-none");
+    renderSources();
+
+    seeMoreBtn.addEventListener("click", () => {
+      expanded = !expanded;
+      renderSources();
+    });
+  }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const sourcesContainer = document.getElementById("dataSources");
+  const sources = sourcesContainer.querySelectorAll(".col-6");
+  const seeMoreBtn = document.getElementById("seeMoreSources");
+
+  let collapsedCount = 4;
+  let expanded = false;
+
+  function renderSources() {
+    sources.forEach((src, index) => {
+      if (!expanded && index >= collapsedCount) {
+        src.style.display = "none";
+      } else {
+        src.style.display = "block";
+      }
+    });
+
+    if (expanded) {
+      seeMoreBtn.innerHTML = "See less <i class='fas fa-chevron-up ms-1'></i>";
+    } else {
+      seeMoreBtn.innerHTML = "See more <i class='fas fa-chevron-down ms-1'></i>";
+    }
+  }
+
+  if (sources.length > collapsedCount) {
+    seeMoreBtn.classList.remove("d-none");
+    renderSources();
+
+    seeMoreBtn.addEventListener("click", () => {
+      expanded = !expanded;
+      renderSources();
+    });
+  }
+});
+
+
+</script>
+
+<script>
+
+</script>
+
+</body>
+</html>
