@@ -1466,8 +1466,6 @@ body::after {
                                     <div class="col-6 mb-2"><span class="badge badge-info">Europe</span></div>
                                     <div class="col-6 mb-2"><span class="badge badge-primary">NCBI GEO</span></div>
                                     <div class="col-6 mb-2"><span class="badge badge-warning">Crossref</span></div>
-                                    <!-- <div class="col-6 mb-2"><span class="badge badge-info">bioRxiv</span></div>
-                                    <div class="col-6 mb-2"><span class="badge badge-success">medRxiv</span></div> -->
                                     <div class="col-6 mb-2"><span class="badge badge-info">OpenAlex</span></div>
                                     </div>
                                     
@@ -2550,42 +2548,6 @@ async function performSearch() {
         searchResults = results;
         displaySearchResults(results, data.query || query, results.length);
         showAlert(`Found ${data.count || results.length} NSLSL results for "${data.query || query}"`, 'success');
-        return;
-    }
-
-    if (source === 'bioRxiv' || source === 'medRxiv') {
-        const params = new URLSearchParams();
-        params.append('q', query);
-        
-        if (date_from) params.append('from', date_from);
-        if (date_to)   params.append('to', date_to);
-
-        params.append('limit', '15');
-        params.append('mode', 'ANY');
-        params.append('server', source === 'bioRxiv' ? 'biorxiv' : 'medrxiv');
-
-        const resp = await fetch(`/api/biorxiv/search?${params.toString()}`);
-        if (!resp.ok) throw new Error('bioRxiv/medRxiv API failed');
-        const data = await resp.json();
-        displayChatbotSummary(data.chatbot);
-
-        const results = (data.results || []).map(r => ({
-        title: r.title || '',
-        authors: r.authors || [],
-        publication_date: r.publication_date || r.date || '',
-        source: source,
-        doi: r.doi || null,
-        abstract: r.abstract || '',
-        url: r.url || null,
-        keywords: r.keywords || null,
-        sentiment: r.sentiment || null,
-        objective: r.objective || null
-        }));
-
-
-        searchResults = results;
-        displaySearchResults(results, query, results.length);
-        hideLoading();
         return;
     }
 
