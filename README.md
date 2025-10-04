@@ -181,6 +181,4 @@ Beyond simple **summaries**, Astro-Biome highlights each article’s **objective
 
 ![ChatBot UI](/image/chatbot.png)
 
-![ChatBot Avatar](/image/avatar.png)
-
 > **Empowering the next generation of space biology research and discovery. Explore the cosmos with us!**
