@@ -914,34 +914,32 @@ class NASATaskBookScraper:
         return "", ""
     
     def _extract_task_keywords(self) -> List[str]:
-
         keywords = []
-        
         try:
             page_text = self.driver.find_element(By.TAG_NAME, "body").text
-            
+
             keyword_patterns = [
                 r'Keywords?[:\s]*(.+?)(?:\n\n|\n[A-Z][A-Z\s]+:|$)',
                 r'Tags?[:\s]*(.+?)(?:\n\n|\n[A-Z][A-Z\s]+:|$)',
                 r'Topics?[:\s]*(.+?)(?:\n\n|\n[A-Z][A-Z\s]+:|$)',
                 r'Subject[:\s]*(.+?)(?:\n\n|\n[A-Z][A-Z\s]+:|$)'
             ]
-            
+
             for pattern in keyword_patterns:
                 matches = re.finditer(pattern, page_text, re.IGNORECASE | re.DOTALL)
                 for match in matches:
                     keyword_text = match.group(1).strip()
-                    if k
+                    if keyword_text:
                         keyword_list = re.split(r'[,;]|\sand\s', keyword_text)
                         for keyword in keyword_list:
                             clean_keyword = keyword.strip()
                             if len(clean_keyword) > 2 and clean_keyword not in keywords:
                                 keywords.append(clean_keyword)
                         if keywords:
-                            return keywords[:15]  
+                            return keywords[:15]
         except:
             pass
-        
+
         return keywords
     
     def _extract_task_publications(self) -> List[str]:
