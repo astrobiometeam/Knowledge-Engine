@@ -97,7 +97,7 @@ class NSLSLScraper:
             
             if not article_links:
                 print("No article links found")
-                # ذخیره صفحه برای debug
+                پ
                 with open("debug_results_page.html", "w", encoding="utf-8") as f:
                     f.write(self.driver.page_source)
                 print("Results page saved for debug")
@@ -244,7 +244,7 @@ class NSLSLScraper:
             if title or nslsl_id:
                 return article
             else:
-                print(f"⚠️ Article {article_num} does not have enough information")
+                print(f"Article {article_num} does not have enough information")
                 return None
                 
         except Exception as e:
@@ -291,7 +291,7 @@ class NSLSLScraper:
                 if (len(line) > 15 and 
                     not any(pattern in line for pattern in skip_patterns) and
                     not line.startswith(('http', 'www', 'doi:', 'NSLSL ID:', 'Author'))):
-                    return line[:200]  # محدود کردن طول
+                    return line[:200]  
         except:
             pass
         
@@ -316,7 +316,7 @@ class NSLSLScraper:
                 for element in elements:
                     text = element.text.strip()
                     if text and len(text) > 2:
-                        # تقسیم نویسندگان
+                        
                         author_list = re.split(r'[,;]|\sand\s|\s&\s', text)
                         for author in author_list:
                             clean_author = re.sub(r'\s+', ' ', author.strip())
@@ -427,7 +427,7 @@ class NSLSLScraper:
                 matches = re.finditer(pattern, page_text, re.IGNORECASE | re.DOTALL)
                 for match in matches:
                     abstract = match.group(1).strip()
-                    abstract = re.sub(r'\s+', ' ', abstract)  # پاک‌سازی فضاهای اضافی
+                    abstract = re.sub(r'\s+', ' ', abstract)  
                     if len(abstract) > 100:
                         print(f"Abstract found with pattern {i}: {len(abstract)} characters")
                         print(f"Start of text : {abstract[:100]}...")
@@ -537,7 +537,7 @@ class NSLSLScraper:
             pass
         
         return ""
-    #
+    
     def _extract_year_from_detail_page(self) -> str:
         
         try:
@@ -689,7 +689,6 @@ class NSLSLScraper:
                     '; '.join(article.authors),
                     article.journal,
                     article.publication_date,   
-                    # article.year,
                     article.volume,
                     article.pages,
                     article.doi,
@@ -737,7 +736,7 @@ class NSLSLScraper:
 def main():
     print("=" * 50)
 
-    # Default values
+    
     topic = "microgravity"
     max_results = 5
     save_format = "csv"
@@ -758,10 +757,10 @@ def main():
                 json_filename = f"{topic}_{timestamp}_articles.json"
                 scraper.save_to_json(articles, json_filename)
 
-            print(f"\n🎉 Done!")
-            print(f"📊 Found {len(articles)} articles")
+            print(f"\n Done")
+            print(f"Found {len(articles)} articles")
 
-            # Show summary of results
+            
             for i, article in enumerate(articles, 1):
                 print(f"\n--- Article {i} ---")
                 print(f"Title: {article.title[:80]}...")
@@ -773,11 +772,11 @@ def main():
                 print(f"Link: {article.url}")
 
         else:
-            print("❌ No articles found!")
-            print("💡 Please check the debug files")
+            print("No articles found")
+            print("Please check the debug files")
 
     except Exception as e:
-        print(f"❌ General Error: {str(e)}")
+        print(f"General Error: {str(e)}")
 
     finally:
         if scraper:
