@@ -263,21 +263,10 @@ class Config:
     CROSSREF_BASE_URL = "https://api.crossref.org"
 
 
-    NASA_ADS_API_KEY = 'qNP5l0eg3Ayo3VwSX778BklqKG8fmTj5TOayIj6W'
-    NASA_ADS_BASE_URL = 'https://api.adsabs.harvard.edu/v1'
-    NASA_ADS_SEARCH_URL = f"{NASA_ADS_BASE_URL}/search/query"
-    NASA_ADS_METRICS_URL = f"{NASA_ADS_BASE_URL}/metrics"
-    NASA_ADS_CITATIONS_URL = f"{NASA_ADS_BASE_URL}/citations"
-    NASA_ADS_EXPORT_BIBTEX_URL = f"{NASA_ADS_BASE_URL}/export/bibtex"
-
-
     OPENALEX_BASE_URL = "https://api.openalex.org"
 
 
     EUROPE_PMC_BASE = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
-
-    BIORXIV_BASE_URL = "https://api.biorxiv.org/details"
-
 
     MAX_SEARCH_RESULTS = 100
     RESULTS_PER_PAGE = 10
@@ -1221,15 +1210,6 @@ class RealNASAService:
 
         
         try:
-            bio_items = self.search_biorxiv(query, from_date=None, to_date=None, limit=limit_per_source, server="biorxiv")
-            all_papers.extend(bio_items)
-            if bio_items:
-                sources_used.append("bioRxiv")
-        except Exception as e:
-            print(f"bioRxiv error : {e}")
-
-        
-        try:
             epmc = self.search_europe_pmc(query, limit_per_source)
             all_papers.extend(epmc)
             if epmc:
@@ -1237,14 +1217,6 @@ class RealNASAService:
         except Exception as e:
             print(f"Europe PMC error : {e}")
 
-        
-        try:
-            bio = self.search_biorxiv_like(server="biorxiv", query=query, limit=limit_per_source, mode="ANY")
-            all_papers.extend(bio)
-            if bio:
-                sources_used.append("bioRxiv")
-        except Exception as e:
-            print(f"bioRxiv error : {e}")
 
         return all_papers, sources_used
 
@@ -1509,110 +1481,6 @@ class RealNASAService:
             print(f"ncbi geo search error : {e}")
             return []
 
-    def search_biorxiv(self, query, from_date="", to_date="",
-                    limit=20, server="biorxiv", match_mode="ANY", categories=None, max_pages=10):
-
-        try:
-            import html
-            q_terms = [t.strip() for t in (query or "").split() if t.strip()]
-            match_all = (str(match_mode).upper() == "ALL")
-            want = int(limit)
-
-            results = []
-            cursor = 0
-            pages = 0
-
-            
-            nlp = NLPService()
-
-            
-            def hit_filter(item):
-                title = (item.get("title") or "")
-                abstr = (item.get("abstract") or "")
-                cat   = (item.get("category") or "")
-                hay   = f"{title} {abstr} {cat}".lower()
-                
-                if q_terms:
-                    if match_all:
-                        for t in q_terms:
-                            if t.lower() not in hay:
-                                return False
-                    else:
-                        if not any(t.lower() in hay for t in q_terms):
-                            return False
-                
-                if categories:
-                    if (item.get("category") or "").lower() not in [c.lower() for c in categories]:
-                        return False
-                return True
-
-            session = self.session
-            base = f"{Config.BIORXIV_BASE_URL}/{server}/{from_date}/{to_date}"
-
-            while len(results) < want and pages < max_pages:
-                url = f"{base}/{cursor}/json"
-                r = session.get(url, timeout=60)
-                if not r.ok:
-                    break
-
-                data = r.json() or {}
-                coll = data.get("collection", [])
-                if not coll:
-                    break
-
-                for it in coll:
-                    if not hit_filter(it):
-                        continue
-
-                    
-                    authors_str = it.get("authors", "")
-                    authors = [a.strip() for a in authors_str.split(";") if a.strip()]
-
-                    
-                    abstract_raw = it.get("abstract") or ""
-                    abstract_txt = html.unescape(abstract_raw)
-                    title = it.get("title") or "No Title"
-
-                    results.append({
-                        "title": title,
-                        "abstract": abstract_txt,
-                        "authors": authors,
-                        "source": "bioRxiv" if server == "biorxiv" else "medRxiv",
-                        "url": f"https://doi.org/{it.get('doi')}" if it.get("doi") else None,
-                        "doi": it.get("doi"),
-                        "keywords": [it.get("category")] if it.get("category") else [],
-                        
-                        "sentiment": nlp.analyze_sentiment(abstract_txt or title),
-                        "objective": nlp.extract_objective(abstract_txt or title),
-                        "publication_date": it.get("date")
-                    })
-                    if len(results) >= want:
-                        break
-
-                
-                messages = data.get("messages") or []
-                cursor += 100
-                pages += 1
-
-                try:
-                    total = None
-                    if messages and isinstance(messages[0], dict):
-                        total = int(messages[0].get("total") or 0)
-                    if total is not None and cursor >= total:
-                        break
-                except Exception:
-                    pass
-
-            return results[:want]
-
-        except Exception as e:
-            print(f"BioRxiv search error : {e}")
-            return []
-
-    def _bool(v):
-        return str(v).lower() in {"1","true","y","yes","on"}
-
-
     def search_europe_pmc(self, query, limit=20, date_from=None, date_to=None):
 
         base_url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
@@ -1736,79 +1604,6 @@ class RealNASAService:
         
 
         return papers
-
-
-    def search_biorxiv_like(self, server="biorxiv", query="", date_from=None, date_to=None,
-                            limit=20, mode="ANY", max_pages=3):
-
-        import re
-        base = "https://api.biorxiv.org/details"
-        if not (date_from and date_to):
-            
-            today = datetime.utcnow().date()
-            date_to = date_to or today.isoformat()
-            date_from = date_from or f"{today.year-2}-01-01"
-
-        
-        terms = [t for t in re.split(r"\s+", query.strip()) if t]
-        def match_any(title, abstract):
-            text = f"{title}\n{abstract}".lower()
-            return any(t.lower() in text for t in terms) if terms else True
-        def match_all(title, abstract):
-            text = f"{title}\n{abstract}".lower()
-            return all(t.lower() in text for t in terms) if terms else True
-        matcher = match_all if mode == "ALL" else match_any
-
-        collected = []
-        cursor = 0
-        page = 0
-        while len(collected) < limit and page < max_pages:
-            url = f"{base}/{server}/{date_from}/{date_to}/{cursor}/json"
-            resp = self._make_request(url)
-            if not resp:
-                break
-            data = resp.json() or {}
-            coll = data.get("collection", []) or []
-            if not coll:
-                break
-
-            for it in coll:
-                title = it.get("title") or "No Title"
-                abstract = it.get("abstract") or ""
-                if not matcher(title, abstract):
-                    continue
-
-                
-                a_str = it.get("authors") or ""
-                authors = [a.strip() for a in a_str.split(";") if a.strip()]
-
-                doi = it.get("doi")
-                pub_date = self._parse_date(it.get("date"))
-                src = "medRxiv" if server.lower() == "medrxiv" else "bioRxiv"
-                url_paper = f"https://doi.org/{doi}" if doi else ""
-
-                collected.append({
-                    "title": title,
-                    "abstract": abstract,
-                    "authors": authors,
-                    "source": src,
-                    "url": url_paper,
-                    "keywords": [it.get("category")] if it.get("category") else [],
-                    "publication_date": pub_date,
-                    "doi": doi
-                })
-                if len(collected) >= limit:
-                    break
-
-            
-            page += 1
-            cursor += 100
-
-        return collected[:limit]
-
-
-
-
 
 
 class NLPService:
@@ -3188,135 +2983,6 @@ def api_stats():
 
 
 
-@app.route("/api/biorxiv/search")
-def api_biorxiv_search():
-    q = (request.args.get("q") or "").strip()
-    if not q:
-        return jsonify({"success": False, "error": " (q) is required"}), 400
-
-    limit = min(int(request.args.get("limit", 20)), 500)
-    from_date = request.args.get("from", None)
-    to_date = request.args.get("to", None)
-    server = request.args.get("server", "biorxiv")
-    match_mode = request.args.get("mode", "ANY")
-    cats_raw = (request.args.get("categories") or "").strip()
-    categories = [c.strip() for c in cats_raw.split(",") if c.strip()] if cats_raw else None
-    max_pages = min(int(request.args.get("max_pages", 10)), 50)
-    date_from = request.args.get("date_from")
-    date_to = request.args.get("date_to")
-
-    svc = RealNASAService()
-    items = svc.search_biorxiv(
-        q, from_date=from_date, to_date=to_date,
-        limit=limit, server=server, match_mode=match_mode,
-        categories=categories, max_pages=max_pages
-    )
-
-    
-    items = filter_by_date(items, date_from, date_to)
-
-    
-    for item in items:
-        abstract_text = (item.get("abstract") or "").strip()
-        
-        try:
-            summarizer = globals().get("summarize_text", None)
-            if callable(summarizer) and abstract_text and len(abstract_text) >= 120:
-                abstract_text = summarizer(abstract_text)
-            else:
-                abstract_text = generate_summary(abstract_text)
-        except Exception as e:
-            print(f"biorxix : summarization failed for item '{item.get('title')}' : {e}")
-            abstract_text = generate_summary(abstract_text)
-        item["abstract"] = abstract_text
-
-    
-    
-    
-    try:
-        
-        history = SearchHistory(
-            query=q,
-            results_count=len(items),
-            user_ip=request.remote_addr,
-            filters_used=json.dumps({
-                "from": from_date,
-                "to": to_date,
-                "server": server,
-                "mode": match_mode,
-                "categories": categories,
-                "limit": limit
-            }),
-            sources_searched=json.dumps([server])
-        )
-        db.session.add(history)
-
-        
-        for r in items:
-            exists = None
-            if r.get("doi"):
-                exists = Paper.query.filter_by(doi=r["doi"]).first()
-            elif r.get("pubmed_id"):
-                exists = Paper.query.filter_by(pubmed_id=r["pubmed_id"]).first()
-
-            if not exists:
-                
-                pub_date_raw = r.get("publication_date")
-                pub_date = None
-                try:
-                    
-                    pub_date = normalize_publication_date(pub_date_raw)
-                    
-                    if pub_date is None and pub_date_raw:
-                        print(f"database : not parse publication_date for '{r.get('title')}', value={pub_date_raw!r}")
-                except Exception as e:
-                    print(f"database error : publication_date parse error for '{r.get('title')}' : {e}")
-                    pub_date = None
-
-                paper_obj = Paper(
-                    title=r.get("title"),
-                    abstract=r.get("abstract"),
-                    authors=json.dumps(r.get("authors", [])),
-                    source=r.get("source"),
-                    url=r.get("url"),
-                    keywords=json.dumps(r.get("keywords", [])),
-                    publication_date=pub_date,
-                    doi=r.get("doi"),
-                    pubmed_id=r.get("pubmed_id"),
-                    nasa_id=r.get("nasa_id"),
-                    sentiment=r.get("sentiment"),
-                    objective=r.get("objective")
-                )
-                db.session.add(paper_obj)
-
-        db.session.commit()
-    except Exception as db_err:
-        db.session.rollback()
-        print(f"databse Error : {db_err}")
-    
-
-    
-    session_id = request.args.get('session_id','advanced')
-    label = ("medRxiv" if server.lower() == "medrxiv" else "bioRxiv")
-    chatbot_payload = call_chatbot_with_results(
-        items=items,
-        source=label,
-        q=q,
-        session_id=session_id
-    )
-
-    return jsonify({
-        "success": True,
-        "query": q,
-        "count": len(items),
-        "results": items,
-        "chatbot": chatbot_payload
-    })
-
-
-
-
-
 @app.route("/api/europepmc/search")
 def europepmc_search_route():
     q = (request.args.get("q") or request.args.get("query") or "").strip()
@@ -3382,126 +3048,7 @@ def europepmc_search_route():
         "chatbot": chatbot_payload
     })
 
-
-
-
-
-
-@app.route("/api/medrxiv/search")
-def medrxiv_search_route():
-    q = request.args.get("q", "").strip()
-    if not q:
-        return jsonify({"success": False, "error": " (q) is required"}), 400
-
-    limit = min(int(request.args.get("limit", 20)), 200)
-    date_from = request.args.get("date_from")
-    date_to = request.args.get("date_to")
-    mode = (request.args.get("mode") or "ANY").upper()
-    max_pages = min(int(request.args.get("max_pages", 3)), 10)
-
-    svc = RealNASAService()
-    papers = svc.search_biorxiv_like(
-        server="medrxiv",
-        query=q,
-        limit=limit,
-        mode=mode,
-        max_pages=max_pages
-    )
-
     
-    papers = filter_by_date(papers, date_from, date_to)
-
-    
-    for paper in papers:
-        abstract_text = (paper.get("abstract") or "").strip()
-        try:
-            if abstract_text and len(abstract_text) >= 120:
-                abstract_text = summarize_text(abstract_text)
-        except Exception as e:
-            print(f" medrxiv : summarization failed for paper '{paper.get('title')}' : {e}")
-        paper["abstract"] = abstract_text
-
-    
-    
-    
-    try:
-        
-        history = SearchHistory(
-            query=q,
-            results_count=len(papers),
-            user_ip=request.remote_addr,
-            filters_used=json.dumps({
-                "date_from": date_from,
-                "date_to": date_to,
-                "limit": limit,
-                "mode": mode,
-                "max_pages": max_pages
-            }),
-            sources_searched=json.dumps(["medrxiv"])
-        )
-        db.session.add(history)
-
-        
-        for r in papers:
-            exists = None
-            if r.get("doi"):
-                exists = Paper.query.filter_by(doi=r["doi"]).first()
-            elif r.get("pubmed_id"):
-                exists = Paper.query.filter_by(pubmed_id=r["pubmed_id"]).first()
-
-            if not exists:
-                
-                pub_date_raw = r.get("publication_date")
-                pub_date = None
-                try:
-                    pub_date = normalize_publication_date(pub_date_raw)
-                except Exception as e:
-                    print(f"database : publication_date parse error for '{r.get('title')}' : {e}")
-                    pub_date = None
-
-                paper_obj = Paper(
-                    title=r.get("title"),
-                    abstract=r.get("abstract"),
-                    authors=json.dumps(r.get("authors", [])),
-                    source=r.get("source"),
-                    url=r.get("url"),
-                    keywords=json.dumps(r.get("keywords", [])),
-                    publication_date=pub_date,
-                    doi=r.get("doi"),
-                    pubmed_id=r.get("pubmed_id"),
-                    nasa_id=r.get("nasa_id"),
-                    sentiment=r.get("sentiment"),
-                    objective=r.get("objective")
-                )
-                db.session.add(paper_obj)
-
-        db.session.commit()
-    except Exception as db_err:
-        db.session.rollback()
-        print(f"error database : {db_err}")
-    
-
-    
-    session_id = request.args.get('session_id','advanced')
-    chatbot_payload = call_chatbot_with_results(
-        items=papers,
-        source="medRxiv",
-        q=q,
-        session_id=session_id
-    )
-
-    return jsonify({
-        "success": True,
-        "query": q,
-        "count": len(papers),
-        "results": papers,
-        "chatbot": chatbot_payload
-    })
-
-
-
-
-
 
 @app.route("/api/geo/search")
 def ncbi_geo_search_route():
