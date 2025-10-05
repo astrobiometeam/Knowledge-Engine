@@ -171,7 +171,7 @@ Beyond simple **summaries**, Astro-Biome highlights each article’s **objective
 
 ![Main Dashboard Light](/image/dashboard-light.png)
 
-![Knowledge graph](/imge/Knowledge-graph.png)
+![Knowledge graph](/image/Knowledge-graph.png)
 
 ![Activity Report](/image/Activity-Report.png)
 
